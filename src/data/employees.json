@@ -5,7 +5,8 @@
     "department": "Human Resources",
     "dateOfEmployment": "2017-09-02",
     "terminationDate": null,
-    "fullName": "John Perez"
+    "fullName": "John Perez",
+    "codigo": "JP1"
   },
   {
     "id": 2,
@@ -13,7 +14,8 @@
     "department": "Customer Support",
     "dateOfEmployment": "2020-05-07",
     "terminationDate": null,
-    "fullName": "Emma Martin"
+    "fullName": "Emma Martin",
+    "codigo": "EM2"
   },
   {
     "id": 3,
@@ -21,7 +23,8 @@
     "department": "Human Resources",
     "dateOfEmployment": "2021-10-12",
     "terminationDate": null,
-    "fullName": "Sophia Clark"
+    "fullName": "Sophia Clark",
+    "codigo": "SC3"
   },
   {
     "id": 4,
@@ -29,7 +32,8 @@
     "department": "Human Resources",
     "dateOfEmployment": "2021-01-10",
     "terminationDate": "2021-08-15",
-    "fullName": "William Garcia"
+    "fullName": "William Garcia",
+    "codigo": "WG4"
   },
   {
     "id": 5,
@@ -37,7 +41,8 @@
     "department": "Finance",
     "dateOfEmployment": "2012-09-13",
     "terminationDate": "2015-12-18",
-    "fullName": "Sarah Lopez"
+    "fullName": "Sarah Lopez",
+    "codigo": "SL5"
   },
   {
     "id": 6,
@@ -45,7 +50,8 @@
     "department": "Data",
     "dateOfEmployment": "2011-06-20",
     "terminationDate": "2017-03-28",
-    "fullName": "Paul Miller"
+    "fullName": "Paul Miller",
+    "codigo": "PM6"
   },
   {
     "id": 7,
@@ -53,7 +59,8 @@
     "department": "Operations",
     "dateOfEmployment": "2018-03-22",
     "terminationDate": null,
-    "fullName": "Joseph Moore"
+    "fullName": "Joseph Moore",
+    "codigo": "JM7"
   },
   {
     "id": 8,
@@ -61,7 +68,8 @@
     "department": "Operations",
     "dateOfEmployment": "2011-12-04",
     "terminationDate": "2014-07-25",
-    "fullName": "Amelia Brown"
+    "fullName": "Amelia Brown",
+    "codigo": "AB8"
   },
   {
     "id": 9,
@@ -69,7 +77,8 @@
     "department": "Product",
     "dateOfEmployment": "2020-10-02",
     "terminationDate": null,
-    "fullName": "Sophia Moore"
+    "fullName": "Sophia Moore",
+    "codigo": "SM9"
   },
   {
     "id": 10,
@@ -77,7 +86,8 @@
     "department": "IT",
     "dateOfEmployment": "2012-05-29",
     "terminationDate": null,
-    "fullName": "Charles Sanchez"
+    "fullName": "Charles Sanchez",
+    "codigo": "CS10"
   },
   {
     "id": 11,
@@ -85,7 +95,8 @@
     "department": "Customer Support",
     "dateOfEmployment": "2023-02-05",
     "terminationDate": "2023-11-19",
-    "fullName": "Mia Lopez"
+    "fullName": "Mia Lopez",
+    "codigo": "ML11"
   },
   {
     "id": 12,
@@ -93,7 +104,8 @@
     "department": "Finance",
     "dateOfEmployment": "2012-09-05",
     "terminationDate": null,
-    "fullName": "Anthony Moore"
+    "fullName": "Anthony Moore",
+    "codigo": "AM12"
   },
   {
     "id": 13,
@@ -101,7 +113,8 @@
     "department": "IT",
     "dateOfEmployment": "2016-05-30",
     "terminationDate": null,
-    "fullName": "David Taylor"
+    "fullName": "David Taylor",
+    "codigo": "DT13"
   },
   {
     "id": 14,
@@ -109,7 +122,8 @@
     "department": "IT",
     "dateOfEmployment": "2019-10-20",
     "terminationDate": "2020-06-06",
-    "fullName": "Olivia Robinson"
+    "fullName": "Olivia Robinson",
+    "codigo": "OR14"
   },
   {
     "id": 15,
@@ -117,7 +131,8 @@
     "department": "Quality Assurance",
     "dateOfEmployment": "2024-12-12",
     "terminationDate": null,
-    "fullName": "Joseph Brown"
+    "fullName": "Joseph Brown",
+    "codigo": "JB15"
   },
   {
     "id": 16,
@@ -125,7 +140,8 @@
     "department": "Data",
     "dateOfEmployment": "2017-05-22",
     "terminationDate": "2020-01-26",
-    "fullName": "Mark Lee"
+    "fullName": "Mark Lee",
+    "codigo": "ML16"
   },
   {
     "id": 17,
@@ -133,7 +149,8 @@
     "department": "Project Management",
     "dateOfEmployment": "2017-02-27",
     "terminationDate": null,
-    "fullName": "David Thomas"
+    "fullName": "David Thomas",
+    "codigo": "DT17"
   },
   {
     "id": 18,
@@ -141,7 +158,8 @@
     "department": "Data",
     "dateOfEmployment": "2017-04-19",
     "terminationDate": null,
-    "fullName": "Mia Perez"
+    "fullName": "Mia Perez",
+    "codigo": "MP18"
   },
   {
     "id": 19,
@@ -149,7 +167,8 @@
     "department": "Product",
     "dateOfEmployment": "2014-05-23",
     "terminationDate": null,
-    "fullName": "David Smith"
+    "fullName": "David Smith",
+    "codigo": "DS19"
   },
   {
     "id": 20,
@@ -157,7 +176,8 @@
     "department": "Finance",
     "dateOfEmployment": "2014-01-20",
     "terminationDate": null,
-    "fullName": "Matthew Jackson"
+    "fullName": "Matthew Jackson",
+    "codigo": "MJ20"
   },
   {
     "id": 21,
@@ -165,7 +185,8 @@
     "department": "Data",
     "dateOfEmployment": "2021-06-22",
     "terminationDate": null,
-    "fullName": "Charlotte Robinson"
+    "fullName": "Charlotte Robinson",
+    "codigo": "CR21"
   },
   {
     "id": 22,
@@ -173,7 +194,8 @@
     "department": "Operations",
     "dateOfEmployment": "2011-07-30",
     "terminationDate": null,
-    "fullName": "Anthony Jackson"
+    "fullName": "Anthony Jackson",
+    "codigo": "AJ22"
   },
   {
     "id": 23,
@@ -181,7 +203,8 @@
     "department": "Design",
     "dateOfEmployment": "2022-07-18",
     "terminationDate": null,
-    "fullName": "Elizabeth Garcia"
+    "fullName": "Elizabeth Garcia",
+    "codigo": "EG23"
   },
   {
     "id": 24,
@@ -189,7 +212,8 @@
     "department": "Sales",
     "dateOfEmployment": "2023-04-24",
     "terminationDate": "2025-02-02",
-    "fullName": "Mark Thompson"
+    "fullName": "Mark Thompson",
+    "codigo": "MT24"
   },
   {
     "id": 25,
@@ -197,7 +221,8 @@
     "department": "Finance",
     "dateOfEmployment": "2014-12-23",
     "terminationDate": null,
-    "fullName": "James Rodriguez"
+    "fullName": "James Rodriguez",
+    "codigo": "JR25"
   },
   {
     "id": 26,
@@ -205,7 +230,8 @@
     "department": "Project Management",
     "dateOfEmployment": "2022-02-03",
     "terminationDate": "2023-12-27",
-    "fullName": "Daniel Martinez"
+    "fullName": "Daniel Martinez",
+    "codigo": "DM26"
   },
   {
     "id": 27,
@@ -213,7 +239,8 @@
     "department": "Finance",
     "dateOfEmployment": "2013-10-17",
     "terminationDate": null,
-    "fullName": "Emma Miller"
+    "fullName": "Emma Miller",
+    "codigo": "EM27"
   },
   {
     "id": 28,
@@ -221,7 +248,8 @@
     "department": "Operations",
     "dateOfEmployment": "2010-03-07",
     "terminationDate": null,
-    "fullName": "Jessica Johnson"
+    "fullName": "Jessica Johnson",
+    "codigo": "JJ28"
   },
   {
     "id": 29,
@@ -229,7 +257,8 @@
     "department": "IT",
     "dateOfEmployment": "2018-12-10",
     "terminationDate": null,
-    "fullName": "Madison White"
+    "fullName": "Madison White",
+    "codigo": "MW29"
   },
   {
     "id": 30,
@@ -237,6 +266,7 @@
     "department": "Marketing",
     "dateOfEmployment": "2022-03-23",
     "terminationDate": "2022-07-30",
-    "fullName": "William Thomas"
+    "fullName": "William Thomas",
+    "codigo": "WT30"
   }
 ]
