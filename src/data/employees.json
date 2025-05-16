@@ -1,0 +1,212 @@
+[
+  {
+    "occupation": "Sales Representative",
+    "department": "Human Resources",
+    "dateOfEmployment": "2017-09-02",
+    "terminationDate": null,
+    "fullName": "John Perez"
+  },
+  {
+    "occupation": "Customer Support",
+    "department": "Customer Support",
+    "dateOfEmployment": "2020-05-07",
+    "terminationDate": null,
+    "fullName": "Emma Martin"
+  },
+  {
+    "occupation": "Graphic Designer",
+    "department": "Human Resources",
+    "dateOfEmployment": "2021-10-12",
+    "terminationDate": null,
+    "fullName": "Sophia Clark"
+  },
+  {
+    "occupation": "Product Manager",
+    "department": "Human Resources",
+    "dateOfEmployment": "2021-01-10",
+    "terminationDate": "2021-08-15",
+    "fullName": "William Garcia"
+  },
+  {
+    "occupation": "HR Specialist",
+    "department": "Finance",
+    "dateOfEmployment": "2012-09-13",
+    "terminationDate": "2015-12-18",
+    "fullName": "Sarah Lopez"
+  },
+  {
+    "occupation": "HR Specialist",
+    "department": "Data",
+    "dateOfEmployment": "2011-06-20",
+    "terminationDate": "2017-03-28",
+    "fullName": "Paul Miller"
+  },
+  {
+    "occupation": "HR Specialist",
+    "department": "Operations",
+    "dateOfEmployment": "2018-03-22",
+    "terminationDate": null,
+    "fullName": "Joseph Moore"
+  },
+  {
+    "occupation": "Accountant",
+    "department": "Operations",
+    "dateOfEmployment": "2011-12-04",
+    "terminationDate": "2014-07-25",
+    "fullName": "Amelia Brown"
+  },
+  {
+    "occupation": "Project Manager",
+    "department": "Product",
+    "dateOfEmployment": "2020-10-02",
+    "terminationDate": null,
+    "fullName": "Sophia Moore"
+  },
+  {
+    "occupation": "IT Manager",
+    "department": "IT",
+    "dateOfEmployment": "2012-05-29",
+    "terminationDate": null,
+    "fullName": "Charles Sanchez"
+  },
+  {
+    "occupation": "Quality Assurance Engineer",
+    "department": "Customer Support",
+    "dateOfEmployment": "2023-02-05",
+    "terminationDate": "2023-11-19",
+    "fullName": "Mia Lopez"
+  },
+  {
+    "occupation": "Product Manager",
+    "department": "Finance",
+    "dateOfEmployment": "2012-09-05",
+    "terminationDate": null,
+    "fullName": "Anthony Moore"
+  },
+  {
+    "occupation": "Software Engineer",
+    "department": "IT",
+    "dateOfEmployment": "2016-05-30",
+    "terminationDate": null,
+    "fullName": "David Taylor"
+  },
+  {
+    "occupation": "Software Engineer",
+    "department": "IT",
+    "dateOfEmployment": "2019-10-20",
+    "terminationDate": "2020-06-06",
+    "fullName": "Olivia Robinson"
+  },
+  {
+    "occupation": "Sales Representative",
+    "department": "Quality Assurance",
+    "dateOfEmployment": "2024-12-12",
+    "terminationDate": null,
+    "fullName": "Joseph Brown"
+  },
+  {
+    "occupation": "Software Engineer",
+    "department": "Data",
+    "dateOfEmployment": "2017-05-22",
+    "terminationDate": "2020-01-26",
+    "fullName": "Mark Lee"
+  },
+  {
+    "occupation": "Data Analyst",
+    "department": "Project Management",
+    "dateOfEmployment": "2017-02-27",
+    "terminationDate": null,
+    "fullName": "David Thomas"
+  },
+  {
+    "occupation": "DevOps Engineer",
+    "department": "Data",
+    "dateOfEmployment": "2017-04-19",
+    "terminationDate": null,
+    "fullName": "Mia Perez"
+  },
+  {
+    "occupation": "IT Manager",
+    "department": "Product",
+    "dateOfEmployment": "2014-05-23",
+    "terminationDate": null,
+    "fullName": "David Smith"
+  },
+  {
+    "occupation": "Product Manager",
+    "department": "Finance",
+    "dateOfEmployment": "2014-01-20",
+    "terminationDate": null,
+    "fullName": "Matthew Jackson"
+  },
+  {
+    "occupation": "IT Manager",
+    "department": "Data",
+    "dateOfEmployment": "2021-06-22",
+    "terminationDate": null,
+    "fullName": "Charlotte Robinson"
+  },
+  {
+    "occupation": "Project Manager",
+    "department": "Operations",
+    "dateOfEmployment": "2011-07-30",
+    "terminationDate": null,
+    "fullName": "Anthony Jackson"
+  },
+  {
+    "occupation": "Business Analyst",
+    "department": "Design",
+    "dateOfEmployment": "2022-07-18",
+    "terminationDate": null,
+    "fullName": "Elizabeth Garcia"
+  },
+  {
+    "occupation": "DevOps Engineer",
+    "department": "Sales",
+    "dateOfEmployment": "2023-04-24",
+    "terminationDate": "2025-02-02",
+    "fullName": "Mark Thompson"
+  },
+  {
+    "occupation": "Quality Assurance Engineer",
+    "department": "Finance",
+    "dateOfEmployment": "2014-12-23",
+    "terminationDate": null,
+    "fullName": "James Rodriguez"
+  },
+  {
+    "occupation": "Project Manager",
+    "department": "Project Management",
+    "dateOfEmployment": "2022-02-03",
+    "terminationDate": "2023-12-27",
+    "fullName": "Daniel Martinez"
+  },
+  {
+    "occupation": "Project Manager",
+    "department": "Finance",
+    "dateOfEmployment": "2013-10-17",
+    "terminationDate": null,
+    "fullName": "Emma Miller"
+  },
+  {
+    "occupation": "Sales Representative",
+    "department": "Operations",
+    "dateOfEmployment": "2010-03-07",
+    "terminationDate": null,
+    "fullName": "Jessica Johnson"
+  },
+  {
+    "occupation": "IT Manager",
+    "department": "IT",
+    "dateOfEmployment": "2018-12-10",
+    "terminationDate": null,
+    "fullName": "Madison White"
+  },
+  {
+    "occupation": "UX Designer",
+    "department": "Marketing",
+    "dateOfEmployment": "2022-03-23",
+    "terminationDate": "2022-07-30",
+    "fullName": "William Thomas"
+  }
+]
