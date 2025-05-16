@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import EmployeeList from '@/pages/EmployeeList.vue'
+import type { RouteRecordRaw } from 'vue-router'
 
-const routes = [
+import EmployeesPage from '@/pages/EmployeesPage.vue'
+
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'EmployeeList',
-    component: EmployeeList, 
+    name: 'Employees',
+    component: EmployeesPage
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 

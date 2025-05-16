@@ -1,16 +1,19 @@
+<script setup lang="ts">
+import NavbarComponent from '@/components/Navbar.vue';
+</script>
+
 <template>
-  <div>
-    <Navbar />
-    <main class="container my-4">
+  <div class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Header/Navbar -->
+    <header>
+      <NavbarComponent />
+    </header>
+
+    <!-- Main content area -->
+    <main class="flex-grow-1 container py-4">
       <router-view />
     </main>
   </div>
 </template>
 
-<script lang="ts" setup>
-import Navbar from '@/components/Navbar.vue';
-</script>
-
-<style scoped>
-/* Puedes agregar estilos específicos si es necesario, pero Bootstrap se encarga casi todo */
-</style>
+<style scoped lang="scss"></style>
