@@ -23,7 +23,8 @@ onMounted(() => {
 })
 
 function handleEdit(employee: Employee) {
-    router.push({ name: 'EmployeeEdit', params: { id: employee.id } })
+    //router.push({ name: 'EmployeeEdit', params: { id: employee.id } })
+    localStorage.removeItem('employees')
 }
 
 function handleDelete(employee: Employee) {

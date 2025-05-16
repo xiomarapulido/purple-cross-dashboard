@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { reactive, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
@@ -17,17 +17,24 @@ const schema = yup.object({
     terminationDate: yup.date().nullable()
 })
 
-const { handleSubmit, errors, resetForm, values, setValues } = useForm<Employee>({
-    validationSchema: schema,
-    initialValues: {
-        code: '',
-        fullName: '',
-        occupation: '',
-        department: '',
-        dateOfEmployment: null,
-        terminationDate: null
-    }
+const formData = reactive<Employee>({
+    id: 0,
+    code: '',
+    fullName: '',
+    occupation: '',
+    department: '',
+    dateOfEmployment: null,
+    terminationDate: null
 })
+
+const { handleSubmit, errors, resetForm } = useForm<Employee>({
+    validationSchema: schema,
+    initialValues: formData
+})
+
+watch(formData, (newVal) => {
+    resetForm({ values: newVal })
+}, { immediate: true, deep: true })
 
 onMounted(() => {
     const idParam = route.params.id
@@ -38,21 +45,14 @@ onMounted(() => {
         const employees: Employee[] = JSON.parse(employeesJson)
         const employeeToEdit = employees.find(e => e.id === id)
         if (employeeToEdit) {
-            setValues({
-                code: employeeToEdit.code,
-                fullName: employeeToEdit.fullName,
-                occupation: employeeToEdit.occupation,
-                department: employeeToEdit.department,
-                dateOfEmployment: employeeToEdit.dateOfEmployment ?? null,
-                terminationDate: employeeToEdit.terminationDate ?? null
-            })
+            Object.assign(formData, employeeToEdit)
         }
     }
 })
 
-const onSubmit = handleSubmit((formValues) => {
+const onSubmit = handleSubmit(() => {
     const employeeId = route.params.id ? Number(route.params.id) : Math.floor(Math.random() * 1000000)
-    const newEmployee: Employee = { id: employeeId, ...formValues }
+    const newEmployee: Employee = { id: employeeId, ...formData }
     const employeesJson = localStorage.getItem('employees')
     const employees: Employee[] = employeesJson ? JSON.parse(employeesJson) : []
     const index = employees.findIndex(e => e.id === employeeId)
@@ -76,35 +76,35 @@ function onCancel() {
         <form @submit.prevent="onSubmit" novalidate>
             <div class="mb-3">
                 <label for="code">Code *</label>
-                <input id="code" v-model="values.code" type="text"
+                <input id="code" v-model="formData.code" type="text"
                     :class="['form-control', errors.code ? 'is-invalid' : '']" />
                 <div class="invalid-feedback">{{ errors.code }}</div>
             </div>
             <div class="mb-3">
                 <label for="fullName">Full Name *</label>
-                <input id="fullName" v-model="values.fullName" type="text"
+                <input id="fullName" v-model="formData.fullName" type="text"
                     :class="['form-control', errors.fullName ? 'is-invalid' : '']" />
                 <div class="invalid-feedback">{{ errors.fullName }}</div>
             </div>
             <div class="mb-3">
                 <label for="occupation">Occupation *</label>
-                <input id="occupation" v-model="values.occupation" type="text"
+                <input id="occupation" v-model="formData.occupation" type="text"
                     :class="['form-control', errors.occupation ? 'is-invalid' : '']" />
                 <div class="invalid-feedback">{{ errors.occupation }}</div>
             </div>
             <div class="mb-3">
                 <label for="department">Department *</label>
-                <input id="department" v-model="values.department" type="text"
+                <input id="department" v-model="formData.department" type="text"
                     :class="['form-control', errors.department ? 'is-invalid' : '']" />
                 <div class="invalid-feedback">{{ errors.department }}</div>
             </div>
             <div class="mb-3">
                 <label for="dateOfEmployment">Date of Employment</label>
-                <input id="dateOfEmployment" v-model="values.dateOfEmployment" type="date" class="form-control" />
+                <input id="dateOfEmployment" v-model="formData.dateOfEmployment" type="date" class="form-control" />
             </div>
             <div class="mb-3">
                 <label for="terminationDate">Termination Date</label>
-                <input id="terminationDate" v-model="values.terminationDate" type="date" class="form-control" />
+                <input id="terminationDate" v-model="formData.terminationDate" type="date" class="form-control" />
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button type="button" class="btn btn-secondary" @click="onCancel">Cancel</button>
