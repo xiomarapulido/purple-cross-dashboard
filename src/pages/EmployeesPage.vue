@@ -46,8 +46,7 @@ function refreshList() {
 
 <template>
     <div class="position-relative">
-        <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete"
-            @refresh="refreshList" />
+        <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete" />
         <button class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px;" @click="goToCreate">
             Create Employee
         </button>
