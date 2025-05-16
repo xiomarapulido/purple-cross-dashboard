@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LayoutBase from './layouts/LayoutBase.vue';
+import LayoutBase from '@/layouts/LayoutBase.vue';
 </script>
 
 <template>
