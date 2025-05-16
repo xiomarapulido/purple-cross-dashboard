@@ -1,63 +1,50 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import employeesJson from '@/data/employees.json'
+import { ref, computed } from 'vue'
+import type { Employee } from '@/types/Employee'
+import rawEmployees from '@/data/employees.json'
+import Papa from 'papaparse'
 
-type Employee = {
-    fullName: string
-    occupation: string
-    department: string
-    dateOfEmployment: string
-    terminationDate: string | null
-}
-
-const searchTerm = ref('')
-const employees = ref<Employee[]>([])
+const searchQuery = ref('')
+const rowsPerPage = ref(5)
 const currentPage = ref(1)
-const itemsPerPage = 5
-const sortKey = ref<keyof Employee | ''>('')
+const sortKey = ref<'fullName' | 'department' | 'occupation' | 'dateOfEmployment' | 'terminationDate'>('fullName')
 const sortAsc = ref(true)
-
-// Inicializar con el JSON
-const loadEmployees = () => {
-    const local = localStorage.getItem('employees')
-    employees.value = local ? JSON.parse(local) : employeesJson
-}
-
-const saveEmployees = () => {
-    localStorage.setItem('employees', JSON.stringify(employees.value))
-}
+const employees = ref<Employee[]>([...rawEmployees])
 
 const filteredEmployees = computed(() => {
-    return employees.value.filter((e) =>
-        Object.values(e).some((val) =>
-            String(val).toLowerCase().includes(searchTerm.value.toLowerCase())
-        )
+    const query = searchQuery.value.toLowerCase()
+    return employees.value.filter(emp =>
+        emp.fullName.toLowerCase().includes(query) ||
+        emp.department.toLowerCase().includes(query) ||
+        emp.occupation.toLowerCase().includes(query)
     )
 })
 
 const sortedEmployees = computed(() => {
-    if (!sortKey.value) return filteredEmployees.value
     return [...filteredEmployees.value].sort((a, b) => {
-        const aVal = a[sortKey.value]
-        const bVal = b[sortKey.value]
-        return sortAsc.value
-            ? String(aVal).localeCompare(String(bVal))
-            : String(bVal).localeCompare(String(aVal))
+        let valA = a[sortKey.value]
+        let valB = b[sortKey.value]
+
+        // Convert dates to timestamps
+        if (sortKey.value === 'dateOfEmployment' || sortKey.value === 'terminationDate') {
+            valA = valA ? new Date(valA).getTime() : 0
+            valB = valB ? new Date(valB).getTime() : 0
+        }
+
+        if (valA < valB) return sortAsc.value ? -1 : 1
+        if (valA > valB) return sortAsc.value ? 1 : -1
+        return 0
     })
 })
 
-const totalPages = computed(() => Math.ceil(sortedEmployees.value.length / itemsPerPage))
-
 const paginatedEmployees = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage
-    return sortedEmployees.value.slice(start, start + itemsPerPage)
+    const start = (currentPage.value - 1) * rowsPerPage.value
+    return sortedEmployees.value.slice(start, start + rowsPerPage.value)
 })
 
-const changePage = (page: number) => {
-    if (page >= 1 && page <= totalPages.value) currentPage.value = page
-}
+const totalPages = computed(() => Math.ceil(sortedEmployees.value.length / rowsPerPage.value))
 
-const sortBy = (key: keyof Employee) => {
+function changeSort(key: typeof sortKey.value) {
     if (sortKey.value === key) {
         sortAsc.value = !sortAsc.value
     } else {
@@ -66,66 +53,102 @@ const sortBy = (key: keyof Employee) => {
     }
 }
 
-const confirmDelete = (index: number) => {
-    if (confirm('Are you sure you want to delete this employee?')) {
-        employees.value.splice(index, 1)
-        saveEmployees()
+function deleteEmployee(index: number) {
+    const employeeToDelete = paginatedEmployees.value[index]
+    const confirmed = window.confirm(`Are you sure you want to delete ${employeeToDelete.fullName}?`)
+    if (confirmed) {
+        const realIndex = employees.value.findIndex(e => e.fullName === employeeToDelete.fullName)
+        if (realIndex !== -1) {
+            employees.value.splice(realIndex, 1)
+        }
     }
 }
 
-loadEmployees()
+
+function exportCSV() {
+    const csv = Papa.unparse(employees.value)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', 'employees.csv')
+    link.click()
+    URL.revokeObjectURL(url)
+}
 </script>
 
 <template>
-    <div class="container my-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Employees</h2>
-            <input v-model="searchTerm" type="text" class="form-control w-50" placeholder="Search..." />
+    <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <input v-model="searchQuery" type="text" class="form-control w-auto" placeholder="Search..." />
+        <div class="d-flex align-items-center gap-2">
+            <label for="rowsPerPage" class="form-label mb-0">Rows per page:</label>
+            <select id="rowsPerPage" v-model="rowsPerPage" class="form-select w-auto">
+                <option :value="5">5</option>
+                <option :value="10">10</option>
+                <option :value="25">25</option>
+            </select>
         </div>
+        <button @click="exportCSV" class="btn btn-outline-secondary">
+            <i class="bi bi-download me-1"></i> Export CSV
+        </button>
+    </div>
 
-        <table class="table table-hover table-striped table-bordered table-responsive">
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle text-center">
             <thead class="table-light">
                 <tr>
-                    <th @click="sortBy('fullName')">Name</th>
-                    <th @click="sortBy('occupation')">Occupation</th>
-                    <th @click="sortBy('department')">Department</th>
-                    <th @click="sortBy('dateOfEmployment')">Employment Date</th>
-                    <th @click="sortBy('terminationDate')">Termination Date</th>
+                    <th @click="changeSort('fullName')" role="button">Name <span
+                            :class="sortKey === 'fullName' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
+                    </th>
+                    <th @click="changeSort('department')" role="button">Department <span
+                            :class="sortKey === 'department' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
+                    </th>
+                    <th @click="changeSort('occupation')" role="button">Position <span
+                            :class="sortKey === 'occupation' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
+                    </th>
+                    <th @click="changeSort('dateOfEmployment')" role="button">Hired <span
+                            :class="sortKey === 'dateOfEmployment' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
+                    </th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(employee, index) in paginatedEmployees" :key="index">
+                <tr v-if="paginatedEmployees.length === 0">
+                    <td colspan="5">No matching employees found.</td>
+                </tr>
+                <tr v-for="(employee, index) in paginatedEmployees" :key="employee.fullName + index">
                     <td>{{ employee.fullName }}</td>
-                    <td>{{ employee.occupation }}</td>
                     <td>{{ employee.department }}</td>
+                    <td>{{ employee.occupation }}</td>
                     <td>{{ employee.dateOfEmployment }}</td>
-                    <td>{{ employee.terminationDate || '—' }}</td>
                     <td>
-                        <button class="btn btn-sm btn-danger" @click="confirmDelete(index)">Delete</button>
+                        <button class="btn btn-sm btn-outline-danger" @click="deleteEmployee(index)">
+                            <i class="bi bi-trash3"></i>
+                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
-
-        <nav>
-            <ul class="pagination justify-content-center">
-                <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link" @click="changePage(currentPage - 1)">Previous</button>
-                </li>
-                <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: page === currentPage }">
-                    <button class="page-link" @click="changePage(page)">{{ page }}</button>
-                </li>
-                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link" @click="changePage(currentPage + 1)">Next</button>
-                </li>
-            </ul>
-        </nav>
     </div>
+
+    <nav class="d-flex justify-content-center mt-3">
+        <ul class="pagination">
+            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button class="page-link" @click="currentPage--" :disabled="currentPage === 1">Previous</button>
+            </li>
+            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
+                <button class="page-link" @click="currentPage = page">{{ page }}</button>
+            </li>
+            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                <button class="page-link" @click="currentPage++" :disabled="currentPage === totalPages">Next</button>
+            </li>
+        </ul>
+    </nav>
 </template>
 
-<style scoped lang="scss">
-.table th {
+<style scoped>
+th[role='button'] {
     cursor: pointer;
+    user-select: none;
 }
 </style>
