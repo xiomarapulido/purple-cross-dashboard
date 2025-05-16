@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch, defineProps, defineEmits } from 'vue'
+import { ref, computed } from 'vue'
 import type { Employee } from '@/types/Employee'
-import Papa from 'papaparse'
 
-const props = defineProps<{
-    employees: Employee[]
-}>()
-
+const props = defineProps<{ employees: Employee[] }>()
 const emit = defineEmits<{
-    (e: 'update:employees', newEmployees: Employee[]): void
+    (e: 'edit-employee', employee: Employee): void
+    (e: 'delete-employee', employee: Employee): void
+    (e: 'view-employee', employee: Employee): void
 }>()
 
 const searchQuery = ref('')
@@ -17,17 +15,9 @@ const currentPage = ref(1)
 const sortKey = ref<'fullName' | 'department' | 'occupation' | 'dateOfEmployment' | 'terminationDate'>('fullName')
 const sortAsc = ref(true)
 
-// Copia local de employees para permitir reactividad en esta tabla
-const employees = ref<Employee[]>([...props.employees])
-
-// Si la prop cambia desde afuera, actualizamos el local:
-watch(() => props.employees, (newVal) => {
-    employees.value = [...newVal]
-})
-
 const filteredEmployees = computed(() => {
     const query = searchQuery.value.toLowerCase()
-    return employees.value.filter(emp =>
+    return props.employees.filter(emp =>
         emp.fullName.toLowerCase().includes(query) ||
         emp.department.toLowerCase().includes(query) ||
         emp.occupation.toLowerCase().includes(query)
@@ -69,36 +59,6 @@ function changeSort(key: typeof sortKey.value) {
     }
 }
 
-function deleteEmployee(index: number) {
-    const employeeToDelete = paginatedEmployees.value[index]
-    const confirmed = window.confirm(`Are you sure you want to delete ${employeeToDelete.fullName}?`)
-    if (confirmed) {
-        const realIndex = employees.value.findIndex(e => e.fullName === employeeToDelete.fullName)
-        if (realIndex !== -1) {
-            employees.value.splice(realIndex, 1)
-            emit('update:employees', [...employees.value])
-        }
-    }
-}
-
-function exportCSV() {
-    const exportData = employees.value.map(emp => ({
-        fullName: emp.fullName,
-        department: emp.department,
-        occupation: emp.occupation,
-        dateOfEmployment: formatEmploymentDate(emp.dateOfEmployment),
-        terminationDate: emp.terminationDate ? formatTerminationDate(emp.terminationDate) : '-',
-    }))
-    const csv = Papa.unparse(exportData)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'employees.csv')
-    link.click()
-    URL.revokeObjectURL(url)
-}
-
 function formatEmploymentDate(dateStr: string | undefined) {
     if (!dateStr) return '-'
     const date = new Date(dateStr)
@@ -117,12 +77,16 @@ function formatTerminationDate(dateStr: string | undefined) {
     else return 'Terminated'
 }
 
-function viewEmployee(employee: Employee) {
-    alert(`View profile of ${employee.fullName}`)
+function onView(employee: Employee) {
+    emit('view-employee', employee)
 }
 
-function editEmployee(employee: Employee) {
-    alert(`Edit profile of ${employee.fullName}`)
+function onEdit(employee: Employee) {
+    emit('edit-employee', employee)
+}
+
+function onDelete(employee: Employee) {
+    emit('delete-employee', employee)
 }
 </script>
 
@@ -137,9 +101,6 @@ function editEmployee(employee: Employee) {
                 <option :value="25">25</option>
             </select>
         </div>
-        <button @click="exportCSV" class="btn btn-outline-secondary">
-            <i class="bi bi-download me-1"></i> Export CSV
-        </button>
     </div>
 
     <div class="table-responsive">
@@ -178,21 +139,21 @@ function editEmployee(employee: Employee) {
                 <tr v-if="paginatedEmployees.length === 0">
                     <td colspan="6">No matching employees found.</td>
                 </tr>
-                <tr v-for="(employee, index) in paginatedEmployees" :key="employee.fullName + index">
+                <tr v-for="employee in paginatedEmployees" :key="employee.id">
                     <td>{{ employee.fullName }}</td>
                     <td>{{ employee.department }}</td>
                     <td>{{ employee.occupation }}</td>
                     <td>{{ formatEmploymentDate(employee.dateOfEmployment) }}</td>
                     <td>{{ formatTerminationDate(employee.terminationDate) }}</td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary me-1" @click="viewEmployee(employee)">
+                        <button class="btn btn-sm btn-outline-primary me-1" @click="onView(employee)">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-warning me-1" @click="editEmployee(employee)">
+                        <button class="btn btn-sm btn-outline-warning me-1" @click="onEdit(employee)">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" @click="deleteEmployee(index)">
-                            <i class="bi bi-trash3"></i>
+                        <button class="btn btn-sm btn-outline-danger" @click="onDelete(employee)">
+                            <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 </tr>
@@ -214,10 +175,3 @@ function editEmployee(employee: Employee) {
         </ul>
     </nav>
 </template>
-
-<style scoped>
-th[role='button'] {
-    cursor: pointer;
-    user-select: none;
-}
-</style>

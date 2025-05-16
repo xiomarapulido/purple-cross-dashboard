@@ -21,15 +21,21 @@ function closeCreateForm() {
     showCreateForm.value = false
 }
 
-// Para recibir actualizaciones del array modificado en EmployeesTable
-function updateEmployees(newEmployees: Employee[]) {
-    employees.value = newEmployees
+function handleEdit(employee: Employee) {
+    alert(`Editar empleado: ${employee.fullName}`)
+}
+
+function handleDelete(employee: Employee) {
+    const confirmed = confirm(`¿Quieres eliminar a ${employee.fullName}?`)
+    if (confirmed) {
+        employees.value = employees.value.filter(e => e.id !== employee.id)
+    }
 }
 </script>
 
 <template>
     <div class="position-relative">
-        <EmployeesTable :employees="employees" @update:employees="updateEmployees" />
+        <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete" />
 
         <button class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px;" @click="openCreateForm">
             Create Employee
