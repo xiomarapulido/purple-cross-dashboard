@@ -1,15 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, defineProps, defineEmits } from 'vue'
 import type { Employee } from '@/types/Employee'
-import rawEmployees from '@/data/employees.json'
 import Papa from 'papaparse'
+
+const props = defineProps<{
+    employees: Employee[]
+}>()
+
+const emit = defineEmits<{
+    (e: 'update:employees', newEmployees: Employee[]): void
+}>()
 
 const searchQuery = ref('')
 const rowsPerPage = ref(5)
 const currentPage = ref(1)
 const sortKey = ref<'fullName' | 'department' | 'occupation' | 'dateOfEmployment' | 'terminationDate'>('fullName')
 const sortAsc = ref(true)
-const employees = ref<Employee[]>([...rawEmployees])
+
+// Copia local de employees para permitir reactividad en esta tabla
+const employees = ref<Employee[]>([...props.employees])
+
+// Si la prop cambia desde afuera, actualizamos el local:
+watch(() => props.employees, (newVal) => {
+    employees.value = [...newVal]
+})
 
 const filteredEmployees = computed(() => {
     const query = searchQuery.value.toLowerCase()
@@ -25,7 +39,6 @@ const sortedEmployees = computed(() => {
         let valA = a[sortKey.value]
         let valB = b[sortKey.value]
 
-        // Convert dates to timestamps for sorting dates, else strings
         if (sortKey.value === 'dateOfEmployment' || sortKey.value === 'terminationDate') {
             valA = valA ? new Date(valA).getTime() : 0
             valB = valB ? new Date(valB).getTime() : 0
@@ -63,6 +76,7 @@ function deleteEmployee(index: number) {
         const realIndex = employees.value.findIndex(e => e.fullName === employeeToDelete.fullName)
         if (realIndex !== -1) {
             employees.value.splice(realIndex, 1)
+            emit('update:employees', [...employees.value])
         }
     }
 }
@@ -105,12 +119,10 @@ function formatTerminationDate(dateStr: string | undefined) {
 
 function viewEmployee(employee: Employee) {
     alert(`View profile of ${employee.fullName}`)
-    // Aquí puedes poner la lógica real de navegación
 }
 
 function editEmployee(employee: Employee) {
     alert(`Edit profile of ${employee.fullName}`)
-    // Aquí puedes poner la lógica real de navegación
 }
 </script>
 
