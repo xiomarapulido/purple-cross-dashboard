@@ -25,10 +25,13 @@ const sortedEmployees = computed(() => {
         let valA = a[sortKey.value]
         let valB = b[sortKey.value]
 
-        // Convert dates to timestamps
+        // Convert dates to timestamps for sorting dates, else strings
         if (sortKey.value === 'dateOfEmployment' || sortKey.value === 'terminationDate') {
             valA = valA ? new Date(valA).getTime() : 0
             valB = valB ? new Date(valB).getTime() : 0
+        } else {
+            valA = valA?.toString().toLowerCase() ?? ''
+            valB = valB?.toString().toLowerCase() ?? ''
         }
 
         if (valA < valB) return sortAsc.value ? -1 : 1
@@ -64,9 +67,15 @@ function deleteEmployee(index: number) {
     }
 }
 
-
 function exportCSV() {
-    const csv = Papa.unparse(employees.value)
+    const exportData = employees.value.map(emp => ({
+        fullName: emp.fullName,
+        department: emp.department,
+        occupation: emp.occupation,
+        dateOfEmployment: formatEmploymentDate(emp.dateOfEmployment),
+        terminationDate: emp.terminationDate ? formatTerminationDate(emp.terminationDate) : '-',
+    }))
+    const csv = Papa.unparse(exportData)
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -74,6 +83,34 @@ function exportCSV() {
     link.setAttribute('download', 'employees.csv')
     link.click()
     URL.revokeObjectURL(url)
+}
+
+function formatEmploymentDate(dateStr: string | undefined) {
+    if (!dateStr) return '-'
+    const date = new Date(dateStr)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    if (date > today) return 'Employed soon'
+    else return 'Currently employed'
+}
+
+function formatTerminationDate(dateStr: string | undefined) {
+    if (!dateStr) return '-'
+    const date = new Date(dateStr)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    if (date > today) return 'To be terminated'
+    else return 'Terminated'
+}
+
+function viewEmployee(employee: Employee) {
+    alert(`View profile of ${employee.fullName}`)
+    // Aquí puedes poner la lógica real de navegación
+}
+
+function editEmployee(employee: Employee) {
+    alert(`Edit profile of ${employee.fullName}`)
+    // Aquí puedes poner la lógica real de navegación
 }
 </script>
 
@@ -97,31 +134,51 @@ function exportCSV() {
         <table class="table table-hover table-bordered align-middle text-center">
             <thead class="table-light">
                 <tr>
-                    <th @click="changeSort('fullName')" role="button">Name <span
+                    <th @click="changeSort('fullName')" role="button">
+                        Name
+                        <span
                             :class="sortKey === 'fullName' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
                     </th>
-                    <th @click="changeSort('department')" role="button">Department <span
+                    <th @click="changeSort('department')" role="button">
+                        Department
+                        <span
                             :class="sortKey === 'department' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
                     </th>
-                    <th @click="changeSort('occupation')" role="button">Position <span
+                    <th @click="changeSort('occupation')" role="button">
+                        Position
+                        <span
                             :class="sortKey === 'occupation' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
                     </th>
-                    <th @click="changeSort('dateOfEmployment')" role="button">Hired <span
+                    <th @click="changeSort('dateOfEmployment')" role="button">
+                        Hired
+                        <span
                             :class="sortKey === 'dateOfEmployment' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
+                    </th>
+                    <th @click="changeSort('terminationDate')" role="button">
+                        Termination Date
+                        <span
+                            :class="sortKey === 'terminationDate' ? (sortAsc ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill') : ''" />
                     </th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-if="paginatedEmployees.length === 0">
-                    <td colspan="5">No matching employees found.</td>
+                    <td colspan="6">No matching employees found.</td>
                 </tr>
                 <tr v-for="(employee, index) in paginatedEmployees" :key="employee.fullName + index">
                     <td>{{ employee.fullName }}</td>
                     <td>{{ employee.department }}</td>
                     <td>{{ employee.occupation }}</td>
-                    <td>{{ employee.dateOfEmployment }}</td>
+                    <td>{{ formatEmploymentDate(employee.dateOfEmployment) }}</td>
+                    <td>{{ formatTerminationDate(employee.terminationDate) }}</td>
                     <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" @click="viewEmployee(employee)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning me-1" @click="editEmployee(employee)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
                         <button class="btn btn-sm btn-outline-danger" @click="deleteEmployee(index)">
                             <i class="bi bi-trash3"></i>
                         </button>
