@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, onMounted } from 'vue'
+import { reactive, watch, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
@@ -50,18 +50,30 @@ onMounted(() => {
     }
 })
 
+const pageTitle = computed(() => {
+    return route.params.id ? 'Edit Employee' : 'Create Employee'
+})
+
 const onSubmit = handleSubmit(() => {
-    const employeeId = route.params.id ? Number(route.params.id) : Math.floor(Math.random() * 1000000)
-    const newEmployee: Employee = { id: employeeId, ...formData }
     const employeesJson = localStorage.getItem('employees')
     const employees: Employee[] = employeesJson ? JSON.parse(employeesJson) : []
+    
+    const employeeId = route.params.id ? Number(route.params.id) : Math.floor(Math.random() * 1000000)
+    const newEmployee: Employee = { id: employeeId, ...formData }
+
     const index = employees.findIndex(e => e.id === employeeId)
     if (index >= 0) {
+        // Actualizar empleado existente
         employees[index] = newEmployee
     } else {
-        employees.push(newEmployee)
+        // Insertar nuevo empleado al inicio
+        employees.unshift(newEmployee)
     }
     localStorage.setItem('employees', JSON.stringify(employees))
+
+    // Disparar evento para avisar al padre que recargue la lista
+    window.dispatchEvent(new Event('employees-updated'))
+
     router.push({ name: 'Employees' })
 })
 
@@ -72,7 +84,7 @@ function onCancel() {
 
 <template>
     <div class="container py-4">
-        <h3>{{ route.params.id ? 'Edit Employee' : 'Create Employee' }}</h3>
+        <h3>{{ pageTitle }}</h3>
         <form @submit.prevent="onSubmit" novalidate>
             <div class="mb-3">
                 <label for="code">Code *</label>
