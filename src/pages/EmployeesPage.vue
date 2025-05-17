@@ -2,57 +2,87 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import EmployeesTable from '@/components/employees/EmployeesTable.vue'
+import EmployeeModal from '@/components/employees/EmployeeModal.vue'
 import type { Employee } from '@/types/Employee'
 import rawEmployees from '@/data/employees.json'
 
 const employees = ref<Employee[]>([])
 const router = useRouter()
 
+const selectedEmployee = ref<Employee | null>(null)
+const showModal = ref(false)
+
 function loadEmployees() {
-    const stored = localStorage.getItem('employees')
-    if (stored) {
-        employees.value = JSON.parse(stored)
-    } else {
-        employees.value = [...rawEmployees]
-        localStorage.setItem('employees', JSON.stringify(employees.value))
-    }
+  const stored = localStorage.getItem('employees')
+  if (stored) {
+    employees.value = JSON.parse(stored)
+  } else {
+    employees.value = [...rawEmployees]
+    localStorage.setItem('employees', JSON.stringify(employees.value))
+  }
 }
 
 onMounted(() => {
-    loadEmployees()
+  loadEmployees()
 })
 
 function handleEdit(employee: Employee) {
-     router.push({ name: 'EmployeeEdit', params: { id: employee.id } })
+  router.push({ name: 'EmployeeEdit', params: { id: employee.id } })
 }
 
 function handleDelete(employee: Employee) {
-    const confirmed = confirm(`¿Quieres eliminar a ${employee.fullName}?`)
-    if (confirmed) {
-        employees.value = employees.value.filter(e => e.id !== employee.id)
-        localStorage.setItem('employees', JSON.stringify(employees.value))
-    }
+  const confirmed = confirm(`¿Quieres eliminar a ${employee.fullName}?`)
+  if (confirmed) {
+    employees.value = employees.value.filter(e => e.id !== employee.id)
+    localStorage.setItem('employees', JSON.stringify(employees.value))
+  }
 }
 
 function goToCreate() {
-    router.push({ name: 'EmployeeCreate' })
+  router.push({ name: 'EmployeeCreate' })
 }
 
 function refreshList() {
-    loadEmployees()
+  loadEmployees()
 }
 
-// Escuchar evento personalizado para refrescar la lista desde hijos
+function handleView(employee: Employee) {
+  selectedEmployee.value = employee
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+  selectedEmployee.value = null
+}
+
 window.addEventListener('employees-updated', () => {
-    refreshList()
+  refreshList()
 })
 </script>
 
 <template>
-    <div class="position-relative">
-        <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete" />
-        <button class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px;" @click="goToCreate">
-            Create Employee
-        </button>
-    </div>
+  <div class="position-relative">
+    <EmployeesTable
+      :employees="employees"
+      @edit-employee="handleEdit"
+      @delete-employee="handleDelete"
+      @view-employee="handleView"
+    />
+
+    <button
+      class="btn btn-primary position-fixed"
+      style="bottom: 20px; right: 20px;"
+      @click="goToCreate"
+    >
+      Create Employee
+    </button>
+
+    <EmployeeModal
+      v-if="showModal"
+      :employee="selectedEmployee"
+      :show="showModal"
+      @close="closeModal"
+    />
+  </div>
 </template>
