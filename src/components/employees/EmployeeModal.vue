@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
 import type { Employee } from '@/types/Employee'
 
 const props = defineProps<{ employee: Employee | null, show: boolean }>()
