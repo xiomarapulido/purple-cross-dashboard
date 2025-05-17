@@ -23,8 +23,7 @@ onMounted(() => {
 })
 
 function handleEdit(employee: Employee) {
-    //router.push({ name: 'EmployeeEdit', params: { id: employee.id } })
-    localStorage.removeItem('employees')
+     router.push({ name: 'EmployeeEdit', params: { id: employee.id } })
 }
 
 function handleDelete(employee: Employee) {
@@ -42,6 +41,11 @@ function goToCreate() {
 function refreshList() {
     loadEmployees()
 }
+
+// Escuchar evento personalizado para refrescar la lista desde hijos
+window.addEventListener('employees-updated', () => {
+    refreshList()
+})
 </script>
 
 <template>
