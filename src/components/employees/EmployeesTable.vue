@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Employee } from '@/types/Employee'
-
+import { exportEmployeesToCSV } from '@/utils/exportCsv'
 import {
   EVENTS,
   SORT_KEYS,
@@ -94,27 +94,9 @@ function onDelete(employee: Employee) {
 }
 
 function exportToCSV() {
-  const rows = sortedEmployees.value.map((emp) => [
-    `"${emp.fullName}"`,
-    `"${emp.department}"`,
-    `"${emp.occupation}"`,
-    `"${formatEmploymentDate(emp.dateOfEmployment)}"`,
-    `"${formatTerminationDate(emp.terminationDate)}"`,
-  ])
-
-  let csvContent = CSV_HEADERS.join(',') + '\n'
-  csvContent += rows.map((e) => e.join(',')).join('\n')
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.setAttribute('download', 'employees.csv')
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
+  exportEmployeesToCSV(sortedEmployees.value)
 }
+
 </script>
 
 <template>
