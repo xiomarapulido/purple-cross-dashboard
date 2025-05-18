@@ -7,10 +7,16 @@ export const ACTIONS = {
 
 export const VALIDATION_MESSAGES = {
     code: 'Code is required',
+    codeInvalid: 'Code contains invalid characters',
+    codeUnique: 'This code is already in use',
     fullName: 'Full name is required',
+    fullNameInvalid: 'Full name contains invalid characters',
     occupation: 'Occupation is required',
+    occupationInvalid: 'Occupation contains invalid characters',
     department: 'Department is required',
-}
+    departmentInvalid: 'Department contains invalid characters',
+  }
+  
 
 export const FIELD_LABELS = {
     code: 'Code *',
