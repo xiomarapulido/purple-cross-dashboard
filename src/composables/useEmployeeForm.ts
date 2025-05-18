@@ -4,11 +4,12 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import type { Employee } from '@/types/Employee'
 import { STORAGE_KEYS } from '@/constants/storageKeys'
-import { VALIDATION_MESSAGES} from '@/constants/employeeFormConstants'
+import { VALIDATION_MESSAGES } from '@/constants/employeeFormConstants'
 
 export function useEmployeeForm() {
   const route = useRoute()
 
+  // Define validation schema using Yup with messages from constants
   const schema = yup.object({
     code: yup
       .string()
@@ -23,6 +24,7 @@ export function useEmployeeForm() {
         const employees: Employee[] = JSON.parse(employeesJson)
         const currentId = route.params.id ? Number(route.params.id) : null
 
+        // Check that the code is unique among other employees (excluding current one)
         return !employees.some(e => e.code === value && e.id !== currentId)
       }),
     fullName: yup
@@ -41,6 +43,7 @@ export function useEmployeeForm() {
     terminationDate: yup.date().nullable(),
   })
 
+  // Reactive form data model
   const formData = reactive<Employee>({
     id: 0,
     code: '',
@@ -51,11 +54,13 @@ export function useEmployeeForm() {
     terminationDate: null,
   })
 
+  // Initialize form with validation schema and initial values
   const { handleSubmit, errors, resetForm } = useForm<Employee>({
     validationSchema: schema,
     initialValues: formData,
   })
 
+  // Watch form data and reset the form whenever it changes
   watch(
     formData,
     (newVal) => {
@@ -64,6 +69,7 @@ export function useEmployeeForm() {
     { immediate: true, deep: true }
   )
 
+  // On mount, load employee data if editing an existing one
   onMounted(() => {
     const idParam = route.params.id
     if (idParam) {
@@ -78,6 +84,7 @@ export function useEmployeeForm() {
     }
   })
 
+  // Save or update employee in localStorage
   function saveEmployee(employee: Employee) {
     const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
     const employees: Employee[] = employeesJson ? JSON.parse(employeesJson) : []
