@@ -1,33 +1,45 @@
+export const EVENTS = {
+  EDIT_EMPLOYEE: 'edit-employee',
+  DELETE_EMPLOYEE: 'delete-employee',
+  VIEW_EMPLOYEE: 'view-employee',
+}
+
+export const SORT_KEYS = {
+  FULL_NAME: 'fullName',
+  DEPARTMENT: 'department',
+  OCCUPATION: 'occupation',
+  DATE_OF_EMPLOYMENT: 'dateOfEmployment',
+  TERMINATION_DATE: 'terminationDate',
+} as const
+
 export const TABLE_HEADERS = {
-    name: 'Name',
-    department: 'Department',
-    position: 'Position',
-    hired: 'Hired',
-    terminationDate: 'Termination Date',
-    actions: 'Actions',
-  }
-  
-  export const BUTTON_LABELS = {
-    exportCSV: 'Export to CSV',
-    importCSV: 'Import from CSV',
-    previous: 'Previous',
-    next: 'Next',
-  }
-  
-  export const PLACEHOLDERS = {
-    search: 'Search...',
-  }
-  
-  export const MESSAGES = {
-    noResults: 'No matching employees found.',
-    rowsPerPage: 'Rows per page:',
-  }
-  
-  export const CSV_HEADERS = [
-    TABLE_HEADERS.name,
-    TABLE_HEADERS.department,
-    TABLE_HEADERS.position,
-    TABLE_HEADERS.hired,
-    TABLE_HEADERS.terminationDate,
-  ]
-  
+  name: 'Name',
+  department: 'Department',
+  position: 'Position',
+  hired: 'Date of Employment',
+  terminationDate: 'Termination Date',
+  actions: 'Actions',
+}
+
+export const BUTTON_LABELS = {
+  exportCSV: 'Export CSV',
+  previous: 'Previous',
+  next: 'Next',
+}
+
+export const PLACEHOLDERS = {
+  search: 'Search employees...',
+}
+
+export const MESSAGES = {
+  rowsPerPage: 'Rows per page:',
+  noResults: 'No results found.',
+}
+
+export const CSV_HEADERS = [
+  'Full Name',
+  'Department',
+  'Occupation',
+  'Date of Employment',
+  'Termination Date',
+]

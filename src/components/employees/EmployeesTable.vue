@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Employee } from '@/types/Employee'
+
 import {
+  EVENTS,
+  SORT_KEYS,
   TABLE_HEADERS,
   BUTTON_LABELS,
   PLACEHOLDERS,
   MESSAGES,
   CSV_HEADERS,
 } from '@/constants/employeeTableConstants'
+
 import {
   formatEmploymentDate,
   formatTerminationDate,
@@ -15,17 +19,15 @@ import {
 
 const props = defineProps<{ employees: Employee[] }>()
 const emit = defineEmits<{
-  (e: 'edit-employee', employee: Employee): void
-  (e: 'delete-employee', employee: Employee): void
-  (e: 'view-employee', employee: Employee): void
+  (e: typeof EVENTS.EDIT_EMPLOYEE, employee: Employee): void
+  (e: typeof EVENTS.DELETE_EMPLOYEE, employee: Employee): void
+  (e: typeof EVENTS.VIEW_EMPLOYEE, employee: Employee): void
 }>()
 
 const searchQuery = ref('')
 const rowsPerPage = ref(5)
 const currentPage = ref(1)
-const sortKey = ref<
-  'fullName' | 'department' | 'occupation' | 'dateOfEmployment' | 'terminationDate'
->('fullName')
+const sortKey = ref<keyof Employee>(SORT_KEYS.FULL_NAME)
 const sortAsc = ref(true)
 
 const filteredEmployees = computed(() => {
@@ -43,7 +45,10 @@ const sortedEmployees = computed(() => {
     let valA = a[sortKey.value]
     let valB = b[sortKey.value]
 
-    if (sortKey.value === 'dateOfEmployment' || sortKey.value === 'terminationDate') {
+    if (
+      sortKey.value === SORT_KEYS.DATE_OF_EMPLOYMENT ||
+      sortKey.value === SORT_KEYS.TERMINATION_DATE
+    ) {
       valA = valA ? new Date(valA).getTime() : 0
       valB = valB ? new Date(valB).getTime() : 0
     } else {
@@ -66,25 +71,26 @@ const totalPages = computed(() =>
   Math.ceil(sortedEmployees.value.length / rowsPerPage.value)
 )
 
-function changeSort(key: typeof sortKey.value) {
-  if (sortKey.value === key) {
+function changeSort(key: keyof typeof SORT_KEYS) {
+  const employeeKey = SORT_KEYS[key]
+  if (sortKey.value === employeeKey) {
     sortAsc.value = !sortAsc.value
   } else {
-    sortKey.value = key
+    sortKey.value = employeeKey
     sortAsc.value = true
   }
 }
 
 function onView(employee: Employee) {
-  emit('view-employee', employee)
+  emit(EVENTS.VIEW_EMPLOYEE, employee)
 }
 
 function onEdit(employee: Employee) {
-  emit('edit-employee', employee)
+  emit(EVENTS.EDIT_EMPLOYEE, employee)
 }
 
 function onDelete(employee: Employee) {
-  emit('delete-employee', employee)
+  emit(EVENTS.DELETE_EMPLOYEE, employee)
 }
 
 function exportToCSV() {
@@ -136,64 +142,54 @@ function exportToCSV() {
     <table class="table table-hover table-bordered align-middle text-center">
       <thead class="table-light">
         <tr>
-          <th @click="changeSort('fullName')" role="button">
+          <th @click="changeSort('FULL_NAME')" role="button">
             {{ TABLE_HEADERS.name }}
             <span
-              :class="
-                sortKey === 'fullName'
-                  ? sortAsc
-                    ? 'bi bi-caret-up-fill'
-                    : 'bi bi-caret-down-fill'
-                  : ''
-              "
+              :class="sortKey === SORT_KEYS.FULL_NAME
+                ? sortAsc
+                  ? 'bi bi-caret-up-fill'
+                  : 'bi bi-caret-down-fill'
+                : ''"
             />
           </th>
-          <th @click="changeSort('department')" role="button">
+          <th @click="changeSort('DEPARTMENT')" role="button">
             {{ TABLE_HEADERS.department }}
             <span
-              :class="
-                sortKey === 'department'
-                  ? sortAsc
-                    ? 'bi bi-caret-up-fill'
-                    : 'bi bi-caret-down-fill'
-                  : ''
-              "
+              :class="sortKey === SORT_KEYS.DEPARTMENT
+                ? sortAsc
+                  ? 'bi bi-caret-up-fill'
+                  : 'bi bi-caret-down-fill'
+                : ''"
             />
           </th>
-          <th @click="changeSort('occupation')" role="button">
+          <th @click="changeSort('OCCUPATION')" role="button">
             {{ TABLE_HEADERS.position }}
             <span
-              :class="
-                sortKey === 'occupation'
-                  ? sortAsc
-                    ? 'bi bi-caret-up-fill'
-                    : 'bi bi-caret-down-fill'
-                  : ''
-              "
+              :class="sortKey === SORT_KEYS.OCCUPATION
+                ? sortAsc
+                  ? 'bi bi-caret-up-fill'
+                  : 'bi bi-caret-down-fill'
+                : ''"
             />
           </th>
-          <th @click="changeSort('dateOfEmployment')" role="button">
+          <th @click="changeSort('DATE_OF_EMPLOYMENT')" role="button">
             {{ TABLE_HEADERS.hired }}
             <span
-              :class="
-                sortKey === 'dateOfEmployment'
-                  ? sortAsc
-                    ? 'bi bi-caret-up-fill'
-                    : 'bi bi-caret-down-fill'
-                  : ''
-              "
+              :class="sortKey === SORT_KEYS.DATE_OF_EMPLOYMENT
+                ? sortAsc
+                  ? 'bi bi-caret-up-fill'
+                  : 'bi bi-caret-down-fill'
+                : ''"
             />
           </th>
-          <th @click="changeSort('terminationDate')" role="button">
+          <th @click="changeSort('TERMINATION_DATE')" role="button">
             {{ TABLE_HEADERS.terminationDate }}
             <span
-              :class="
-                sortKey === 'terminationDate'
-                  ? sortAsc
-                    ? 'bi bi-caret-up-fill'
-                    : 'bi bi-caret-down-fill'
-                  : ''
-              "
+              :class="sortKey === SORT_KEYS.TERMINATION_DATE
+                ? sortAsc
+                  ? 'bi bi-caret-up-fill'
+                  : 'bi bi-caret-down-fill'
+                : ''"
             />
           </th>
           <th>{{ TABLE_HEADERS.actions }}</th>
