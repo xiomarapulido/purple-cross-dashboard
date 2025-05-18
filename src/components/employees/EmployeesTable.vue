@@ -8,8 +8,7 @@ import {
   TABLE_HEADERS,
   BUTTON_LABELS,
   PLACEHOLDERS,
-  MESSAGES,
-  CSV_HEADERS,
+  MESSAGES
 } from '@/constants/employeeTableConstants'
 
 import {
@@ -18,11 +17,14 @@ import {
 } from '@/utils/formatDates'
 
 const props = defineProps<{ employees: Employee[] }>()
+
+
 const emit = defineEmits<{
-  (e: typeof EVENTS.EDIT_EMPLOYEE, employee: Employee): void
-  (e: typeof EVENTS.DELETE_EMPLOYEE, employee: Employee): void
-  (e: typeof EVENTS.VIEW_EMPLOYEE, employee: Employee): void
+  (e: 'edit-employee', employee: Employee): void
+  (e: 'delete-employee', employee: Employee): void
+  (e: 'view-employee', employee: Employee): void
 }>()
+
 
 const searchQuery = ref('')
 const rowsPerPage = ref(5)
@@ -82,16 +84,17 @@ function changeSort(key: keyof typeof SORT_KEYS) {
 }
 
 function onView(employee: Employee) {
-  emit(EVENTS.VIEW_EMPLOYEE, employee)
+  emit('view-employee', employee)
 }
 
 function onEdit(employee: Employee) {
-  emit(EVENTS.EDIT_EMPLOYEE, employee)
+  emit('edit-employee', employee)
 }
 
 function onDelete(employee: Employee) {
-  emit(EVENTS.DELETE_EMPLOYEE, employee)
+  emit('delete-employee', employee)
 }
+
 
 function exportToCSV() {
   exportEmployeesToCSV(sortedEmployees.value)
@@ -101,12 +104,7 @@ function exportToCSV() {
 
 <template>
   <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <input
-      v-model="searchQuery"
-      type="text"
-      class="form-control w-auto"
-      :placeholder="PLACEHOLDERS.search"
-    />
+    <input v-model="searchQuery" type="text" class="form-control w-auto" :placeholder="PLACEHOLDERS.search" />
     <div class="d-flex align-items-center gap-2">
       <label for="rowsPerPage" class="form-label mb-0">{{ MESSAGES.rowsPerPage }}</label>
       <select id="rowsPerPage" v-model="rowsPerPage" class="form-select w-auto">
@@ -126,53 +124,43 @@ function exportToCSV() {
         <tr>
           <th @click="changeSort('FULL_NAME')" role="button">
             {{ TABLE_HEADERS.name }}
-            <span
-              :class="sortKey === SORT_KEYS.FULL_NAME
-                ? sortAsc
-                  ? 'bi bi-caret-up-fill'
-                  : 'bi bi-caret-down-fill'
-                : ''"
-            />
+            <span :class="sortKey === SORT_KEYS.FULL_NAME
+              ? sortAsc
+                ? 'bi bi-caret-up-fill'
+                : 'bi bi-caret-down-fill'
+              : ''" />
           </th>
           <th @click="changeSort('DEPARTMENT')" role="button">
             {{ TABLE_HEADERS.department }}
-            <span
-              :class="sortKey === SORT_KEYS.DEPARTMENT
-                ? sortAsc
-                  ? 'bi bi-caret-up-fill'
-                  : 'bi bi-caret-down-fill'
-                : ''"
-            />
+            <span :class="sortKey === SORT_KEYS.DEPARTMENT
+              ? sortAsc
+                ? 'bi bi-caret-up-fill'
+                : 'bi bi-caret-down-fill'
+              : ''" />
           </th>
           <th @click="changeSort('OCCUPATION')" role="button">
             {{ TABLE_HEADERS.position }}
-            <span
-              :class="sortKey === SORT_KEYS.OCCUPATION
-                ? sortAsc
-                  ? 'bi bi-caret-up-fill'
-                  : 'bi bi-caret-down-fill'
-                : ''"
-            />
+            <span :class="sortKey === SORT_KEYS.OCCUPATION
+              ? sortAsc
+                ? 'bi bi-caret-up-fill'
+                : 'bi bi-caret-down-fill'
+              : ''" />
           </th>
           <th @click="changeSort('DATE_OF_EMPLOYMENT')" role="button">
             {{ TABLE_HEADERS.hired }}
-            <span
-              :class="sortKey === SORT_KEYS.DATE_OF_EMPLOYMENT
-                ? sortAsc
-                  ? 'bi bi-caret-up-fill'
-                  : 'bi bi-caret-down-fill'
-                : ''"
-            />
+            <span :class="sortKey === SORT_KEYS.DATE_OF_EMPLOYMENT
+              ? sortAsc
+                ? 'bi bi-caret-up-fill'
+                : 'bi bi-caret-down-fill'
+              : ''" />
           </th>
           <th @click="changeSort('TERMINATION_DATE')" role="button">
             {{ TABLE_HEADERS.terminationDate }}
-            <span
-              :class="sortKey === SORT_KEYS.TERMINATION_DATE
-                ? sortAsc
-                  ? 'bi bi-caret-up-fill'
-                  : 'bi bi-caret-down-fill'
-                : ''"
-            />
+            <span :class="sortKey === SORT_KEYS.TERMINATION_DATE
+              ? sortAsc
+                ? 'bi bi-caret-up-fill'
+                : 'bi bi-caret-down-fill'
+              : ''" />
           </th>
           <th>{{ TABLE_HEADERS.actions }}</th>
         </tr>
@@ -210,12 +198,7 @@ function exportToCSV() {
           {{ BUTTON_LABELS.previous }}
         </button>
       </li>
-      <li
-        class="page-item"
-        v-for="page in totalPages"
-        :key="page"
-        :class="{ active: page === currentPage }"
-      >
+      <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
         <button class="page-link" @click="currentPage = page">{{ page }}</button>
       </li>
       <li class="page-item" :class="{ disabled: currentPage === totalPages }">

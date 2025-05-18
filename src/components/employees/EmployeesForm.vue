@@ -28,7 +28,9 @@ const formData = reactive<Employee>({
     code: '',
     fullName: '',
     occupation: '',
-    department: ''
+    department: '',
+    dateOfEmployment: '',
+    terminationDate: ''
 })
 
 const { handleSubmit, errors, resetForm } = useForm<Employee>({
