@@ -4,6 +4,7 @@ import { CSV_HEADERS } from '@/constants/employeeTableConstants'
 
 export function exportEmployeesToCSV(employees: Employee[]) {
   const rows = employees.map((emp) => [
+    `"${emp.code}"`,
     `"${emp.fullName}"`,
     `"${emp.department}"`,
     `"${emp.occupation}"`,

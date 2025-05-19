@@ -18,7 +18,7 @@ const employeeToDelete = ref<Employee | null>(null)
 const { texts } = useTexts()
 
 const router = useRouter()
-const { employees, loadEmployees, deleteEmployee } = useEmployees()
+const { employees, loadEmployees, deleteEmployee, saveEmployees } = useEmployees()
 
 const selectedEmployee = ref<Employee | null>(null)  // currently selected employee for modal
 const showModal = ref(false)  // controls visibility of employee modal
@@ -68,6 +68,13 @@ function handleView(employee: Employee) {
   showModal.value = true
 }
 
+function onImportEmployees(newEmployees: Employee[]) {
+  employees.value.push(...newEmployees)
+  saveEmployees()
+  emitter.emit(EVENTS.employeesUpdated)
+
+}
+
 // Close modal and clear selected employee
 function closeModal() {
   showModal.value = false
@@ -80,7 +87,7 @@ function closeModal() {
     <h1 class="page-title">{{ texts.employeesPage.title }}</h1>
     <!-- Employees table with edit, delete, and view events -->
     <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete"
-      @view-employee="handleView" />
+      @view-employee="handleView" @import-employees="onImportEmployees" />
     <!-- Fixed button to create new employee -->
     <button class="btn btn-primary btn-create-fixed" @click="goToCreate">
       {{ texts.employeesPage.btnCreateEmployee }}
