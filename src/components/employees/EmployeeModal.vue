@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Employee } from '@/types/Employee'
+import { useTexts } from '@/i18n/useTexts'
+const { texts } = useTexts()
 
 const props = defineProps<{ employee: Employee | null, show: boolean }>()
 const emit = defineEmits<{ (e: 'close'): void }>()
@@ -18,51 +20,37 @@ function backdropClick(e: MouseEvent) {
 <template>
   <div v-if="show">
     <!-- Backdrop separado -->
-    <div
-      class="modal-backdrop fade show"
-      @click="backdropClick"
-    ></div>
+    <div class="modal-backdrop fade show" @click="backdropClick"></div>
 
     <!-- Modal centrado -->
-    <div
-      class="modal fade show"
-      tabindex="-1"
-      aria-modal="true"
-      role="dialog"
-      style="display: block;"
-    >
+    <div class="modal fade show" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
             <h5 class="modal-title">Employee Details</h5>
-            <button
-              type="button"
-              class="btn-close btn-close-white"
-              aria-label="Close"
-              @click="close"
-            ></button>
+            <button type="button" class="btn-close btn-close-white" aria-label="Close" @click="close"></button>
           </div>
           <div class="modal-body" v-if="employee">
             <dl class="row">
-              <dt class="col-sm-4">Name</dt>
+              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.name }}</dt>
               <dd class="col-sm-8">{{ employee.fullName }}</dd>
 
-              <dt class="col-sm-4">Department</dt>
+              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.department }}</dt>
               <dd class="col-sm-8">{{ employee.department }}</dd>
 
-              <dt class="col-sm-4">Position</dt>
+              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.position }}</dt>
               <dd class="col-sm-8">{{ employee.occupation }}</dd>
 
-              <dt class="col-sm-4">Date of Employment</dt>
+              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.hired }}</dt>
               <dd class="col-sm-8">{{ employee.dateOfEmployment ?? '-' }}</dd>
 
-              <dt class="col-sm-4">Termination Date</dt>
+              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.terminationDate }}</dt>
               <dd class="col-sm-8">{{ employee.terminationDate ?? '-' }}</dd>
             </dl>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="close">
-              Close
+              {{ texts.employeeTable.tableHeaders.close }}
             </button>
           </div>
         </div>

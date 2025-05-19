@@ -2,8 +2,10 @@
 import { ref, toRef } from 'vue'
 import type { Employee } from '@/types/Employee'
 import { useEmployeeTableLogic } from '@/composables/useEmployeeTableLogic'
-import { SORT_KEYS, EVENTS, TABLE_HEADERS, BUTTON_LABELS, PLACEHOLDERS, MESSAGES } from '@/constants/employeeTableConstants'
+import { SORT_KEYS } from '@/constants/employeeTableConstants'
 import { formatEmploymentDate, formatTerminationDate } from '@/utils/formatDates'
+import { useTexts } from '@/i18n/useTexts'
+const { texts } = useTexts()
 
 const props = defineProps<{ employees: Employee[] }>()
 const emit = defineEmits<{
@@ -48,9 +50,10 @@ function onDelete(employee: Employee) {
 
 <template>
   <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <input v-model="searchQuery" type="text" class="form-control w-auto" :placeholder="PLACEHOLDERS.search" />
+    <input v-model="searchQuery" type="text" class="form-control w-auto"
+      :placeholder="texts.employeeTable.placeholders.search" />
     <div class="d-flex align-items-center gap-2">
-      <label for="rowsPerPage" class="form-label mb-0">{{ MESSAGES.rowsPerPage }}</label>
+      <label for="rowsPerPage" class="form-label mb-0">{{ texts.employeeTable.messages.rowsPerPage }}</label>
       <select id="rowsPerPage" v-model="rowsPerPage" class="form-select w-auto">
         <option :value="5">5</option>
         <option :value="10">10</option>
@@ -58,7 +61,7 @@ function onDelete(employee: Employee) {
       </select>
     </div>
     <button @click="exportToCSV" class="btn btn-outline-success">
-      {{ BUTTON_LABELS.exportCSV }}
+      {{ texts.employeeTable.buttonLabels.exportCSV }}
     </button>
   </div>
 
@@ -67,7 +70,7 @@ function onDelete(employee: Employee) {
       <thead class="table-light">
         <tr>
           <th @click="changeSort('FULL_NAME')" role="button">
-            {{ TABLE_HEADERS.name }}
+            {{ texts.employeeTable.tableHeaders.name }}
             <span :class="sortKey === SORT_KEYS.FULL_NAME
               ? sortAsc
                 ? 'bi bi-caret-up-fill'
@@ -75,7 +78,7 @@ function onDelete(employee: Employee) {
               : ''" />
           </th>
           <th @click="changeSort('DEPARTMENT')" role="button">
-            {{ TABLE_HEADERS.department }}
+            {{ texts.employeeTable.tableHeaders.department }}
             <span :class="sortKey === SORT_KEYS.DEPARTMENT
               ? sortAsc
                 ? 'bi bi-caret-up-fill'
@@ -83,7 +86,7 @@ function onDelete(employee: Employee) {
               : ''" />
           </th>
           <th @click="changeSort('OCCUPATION')" role="button">
-            {{ TABLE_HEADERS.position }}
+            {{ texts.employeeTable.tableHeaders.position }}
             <span :class="sortKey === SORT_KEYS.OCCUPATION
               ? sortAsc
                 ? 'bi bi-caret-up-fill'
@@ -91,7 +94,7 @@ function onDelete(employee: Employee) {
               : ''" />
           </th>
           <th @click="changeSort('DATE_OF_EMPLOYMENT')" role="button">
-            {{ TABLE_HEADERS.hired }}
+            {{ texts.employeeTable.tableHeaders.hired }}
             <span :class="sortKey === SORT_KEYS.DATE_OF_EMPLOYMENT
               ? sortAsc
                 ? 'bi bi-caret-up-fill'
@@ -99,19 +102,19 @@ function onDelete(employee: Employee) {
               : ''" />
           </th>
           <th @click="changeSort('TERMINATION_DATE')" role="button">
-            {{ TABLE_HEADERS.terminationDate }}
+            {{ texts.employeeTable.tableHeaders.terminationDate }}
             <span :class="sortKey === SORT_KEYS.TERMINATION_DATE
               ? sortAsc
                 ? 'bi bi-caret-up-fill'
                 : 'bi bi-caret-down-fill'
               : ''" />
           </th>
-          <th>{{ TABLE_HEADERS.actions }}</th>
+          <th>{{ texts.employeeTable.tableHeaders.actions }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="paginatedEmployees.length === 0">
-          <td colspan="6">{{ MESSAGES.noResults }}</td>
+          <td colspan="6">{{ texts.employeeTable.messages.noResults }}</td>
         </tr>
         <tr v-for="employee in paginatedEmployees" :key="employee.id">
           <td>{{ employee.fullName }}</td>
@@ -139,7 +142,7 @@ function onDelete(employee: Employee) {
     <ul class="pagination">
       <li class="page-item" :class="{ disabled: currentPage === 1 }">
         <button class="page-link" @click="currentPage--" :disabled="currentPage === 1">
-          {{ BUTTON_LABELS.previous }}
+          {{ texts.employeeTable.buttonLabels.previous }}
         </button>
       </li>
       <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
@@ -147,7 +150,7 @@ function onDelete(employee: Employee) {
       </li>
       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
         <button class="page-link" @click="currentPage++" :disabled="currentPage === totalPages">
-          {{ BUTTON_LABELS.next }}
+          {{ texts.employeeTable.buttonLabels.next }}
         </button>
       </li>
     </ul>

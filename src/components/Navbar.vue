@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import { useTexts } from '@/i18n/useTexts'
+const { texts } = useTexts()
+const userLogged = 'Administrator'
+</script>
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
     <div class="col-12 wrap-navbar">
@@ -9,7 +14,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 text-start text-md-end">
           <i class="bi bi-person-circle me-2 icon-nav-user"></i>
           <span class="fw-bold text-light tex-nav-info">
-            Welcome, Administrator
+            {{ texts.navbar.title }} {{ userLogged }}
           </span>
         </div>
 
@@ -17,7 +22,6 @@
     </div>
   </nav>
 </template>
-
 <style scoped>
 .navbar {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -29,12 +33,12 @@
   font-size: 1.25rem;
 }
 
-.icon-nav-info{
+.icon-nav-info {
   font-size: 1.375rem;
   color: var(--green-light);
 }
 
-.icon-nav-user{
+.icon-nav-user {
   font-size: 1.375rem;
   color: var(--yellow);
 }

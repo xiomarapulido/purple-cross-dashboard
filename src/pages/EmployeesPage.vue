@@ -4,10 +4,13 @@ import { useRouter } from 'vue-router'
 import EmployeesTable from '@/components/employees/EmployeesTable.vue'
 import EmployeeModal from '@/components/employees/EmployeeModal.vue'
 import type { Employee } from '@/types/Employee'
-import { useEmployees } from '@/composables/useEmployees'  
-import { emitter } from '@/eventBus'  
-import { ROUTES } from '@/constants/routes'  
+import { useEmployees } from '@/composables/useEmployees'
+import { emitter } from '@/eventBus'
+import { ROUTES } from '@/constants/routes'
 import { EVENTS } from '@/constants/events'
+import { useTexts } from '@/i18n/useTexts'
+
+const { texts } = useTexts()
 
 const router = useRouter()
 const { employees, loadEmployees, deleteEmployee } = useEmployees()
@@ -59,29 +62,16 @@ function closeModal() {
 
 <template>
   <div class="main-container position-relative">
-    <h1 class="page-title">Employee Management</h1>
+    <h1 class="page-title">{{ texts.employeesPage.title }}</h1>
     <!-- Employees table with edit, delete, and view events -->
-    <EmployeesTable
-      :employees="employees"
-      @edit-employee="handleEdit"
-      @delete-employee="handleDelete"
-      @view-employee="handleView"
-    />
+    <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete"
+      @view-employee="handleView" />
     <!-- Fixed button to create new employee -->
-    <button
-      class="btn btn-primary btn-create-fixed"
-      @click="goToCreate"
-      aria-label="Create new employee"
-    >
-      Create Employee
+    <button class="btn btn-primary btn-create-fixed" @click="goToCreate">
+      {{ texts.employeesPage.btnCreateEmployee }}
     </button>
     <!-- Employee details modal -->
-    <EmployeeModal
-      v-if="showModal"
-      :employee="selectedEmployee"
-      :show="showModal"
-      @close="closeModal"
-    />
+    <EmployeeModal v-if="showModal" :employee="selectedEmployee" :show="showModal" @close="closeModal" />
   </div>
 </template>
 

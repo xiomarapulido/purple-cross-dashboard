@@ -4,7 +4,7 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import type { Employee } from '@/types/Employee'
 import { STORAGE_KEYS } from '@/constants/storageKeys'
-import { VALIDATION_MESSAGES } from '@/constants/employeeFormConstants'
+import { texts } from '@/i18n'
 
 export function useEmployeeForm() {
   const route = useRoute()
@@ -13,9 +13,9 @@ export function useEmployeeForm() {
   const schema = yup.object({
     code: yup
       .string()
-      .required(VALIDATION_MESSAGES.code)
-      .matches(/^[a-zA-Z0-9\-_\s]+$/, VALIDATION_MESSAGES.codeInvalid)
-      .test('unique-code', VALIDATION_MESSAGES.codeUnique, function(value) {
+      .required(texts.employeeForm.validationMessages.code)
+      .matches(/^[a-zA-Z0-9\-_\s]+$/, texts.employeeForm.validationMessages.codeInvalid)
+      .test('unique-code', texts.employeeForm.validationMessages.codeUnique, function (value) {
         if (!value) return true
 
         const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
@@ -29,16 +29,16 @@ export function useEmployeeForm() {
       }),
     fullName: yup
       .string()
-      .required(VALIDATION_MESSAGES.fullName)
-      .matches(/^[a-zA-Z\s]+$/, VALIDATION_MESSAGES.fullNameInvalid),
+      .required(texts.employeeForm.validationMessages.fullName)
+      .matches(/^[a-zA-Z\s]+$/, texts.employeeForm.validationMessages.fullNameInvalid),
     occupation: yup
       .string()
-      .required(VALIDATION_MESSAGES.occupation)
-      .matches(/^[a-zA-Z\s]+$/, VALIDATION_MESSAGES.occupationInvalid),
+      .required(texts.employeeForm.validationMessages.occupation)
+      .matches(/^[a-zA-Z\s]+$/, texts.employeeForm.validationMessages.occupationInvalid),
     department: yup
       .string()
-      .required(VALIDATION_MESSAGES.department)
-      .matches(/^[a-zA-Z\s]+$/, VALIDATION_MESSAGES.departmentInvalid),
+      .required(texts.employeeForm.validationMessages.department)
+      .matches(/^[a-zA-Z\s]+$/, texts.employeeForm.validationMessages.departmentInvalid),
     dateOfEmployment: yup.date().nullable(),
     terminationDate: yup.date().nullable(),
   })
@@ -50,8 +50,8 @@ export function useEmployeeForm() {
     fullName: '',
     occupation: '',
     department: '',
-    dateOfEmployment: null,
-    terminationDate: null,
+    dateOfEmployment: '',
+    terminationDate: ''
   })
 
   // Initialize form with validation schema and initial values
