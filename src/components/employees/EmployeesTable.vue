@@ -4,7 +4,10 @@ import type { Employee } from '@/types/Employee'
 import { useEmployeeTableLogic } from '@/composables/useEmployeeTableLogic'
 import { SORT_KEYS } from '@/constants/employeeTableConstants'
 import { formatEmploymentDate, formatTerminationDate } from '@/utils/formatDates'
+import { exportEmployeesToCSV } from '@/utils/exportCsv'
 import { useTexts } from '@/i18n/useTexts'
+import { importEmployeesFromCSV } from '@/utils/importCSV'
+
 const { texts } = useTexts()
 
 const props = defineProps<{ employees: Employee[] }>()
@@ -12,6 +15,8 @@ const emit = defineEmits<{
   (e: 'edit-employee', employee: Employee): void
   (e: 'delete-employee', employee: Employee): void
   (e: 'view-employee', employee: Employee): void
+  (e: 'import-employees', employees: Employee[]): void
+  (e: 'import-employees-error', errors: string[]): void
 }>()
 
 const searchQuery = ref('')
@@ -23,8 +28,8 @@ const sortAsc = ref(true)
 const {
   paginatedEmployees,
   totalPages,
-  changeSort,
-  exportToCSV
+  sortedEmployees,
+  changeSort
 } = useEmployeeTableLogic(
   toRef(props, 'employees'),
   searchQuery,
@@ -45,6 +50,35 @@ function onEdit(employee: Employee) {
 function onDelete(employee: Employee) {
   emit('delete-employee', employee)
 }
+
+function exportToCSV() {
+  exportEmployeesToCSV(sortedEmployees.value)
+}
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+function triggerFileInput() {
+  fileInput.value?.click()
+}
+
+async function onFileChange(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const { validEmployees, errors } = await importEmployeesFromCSV(file, props.employees)
+
+  if (errors.length) {
+    emit('import-employees-error', errors)
+  }
+
+  if (validEmployees.length) {
+    emit('import-employees', validEmployees)
+  }
+
+  target.value = ''
+}
+
 </script>
 
 
@@ -63,6 +97,11 @@ function onDelete(employee: Employee) {
     <button @click="exportToCSV" class="btn btn-outline-success">
       {{ texts.employeeTable.buttonLabels.exportCSV }}
     </button>
+    <input type="file" class="d-none" ref="fileInput" accept=".csv" @change="onFileChange" />
+    <button @click="triggerFileInput" class="btn btn-outline-primary">
+      {{ texts.employeeTable.buttonLabels.importCSV }}
+    </button>
+
   </div>
 
   <div class="table-responsive">

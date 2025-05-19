@@ -30,28 +30,28 @@ function onCancel() {
     <h3>{{ pageTitle }}</h3>
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
-        <label for="code">{{ texts.employeeForm.fieldLabels.code }}</label>
+        <label for="code">{{ texts.employeeForm.fieldLabels.code }}*</label>
         <input id="code" v-model="formData.code" type="text"
           :class="['form-control', errors.code ? 'is-invalid' : '']" />
         <div class="invalid-feedback">{{ errors.code }}</div>
       </div>
 
       <div class="mb-3">
-        <label for="fullName">{{ texts.employeeForm.fieldLabels.fullName }}</label>
+        <label for="fullName">{{ texts.employeeForm.fieldLabels.fullName }}*</label>
         <input id="fullName" v-model="formData.fullName" type="text"
           :class="['form-control', errors.fullName ? 'is-invalid' : '']" />
         <div class="invalid-feedback">{{ errors.fullName }}</div>
       </div>
 
       <div class="mb-3">
-        <label for="occupation">{{ texts.employeeForm.fieldLabels.occupation }}</label>
+        <label for="occupation">{{ texts.employeeForm.fieldLabels.occupation }}*</label>
         <input id="occupation" v-model="formData.occupation" type="text"
           :class="['form-control', errors.occupation ? 'is-invalid' : '']" />
         <div class="invalid-feedback">{{ errors.occupation }}</div>
       </div>
 
       <div class="mb-3">
-        <label for="department">{{ texts.employeeForm.fieldLabels.department }}</label>
+        <label for="department">{{ texts.employeeForm.fieldLabels.department }}*</label>
         <input id="department" v-model="formData.department" type="text"
           :class="['form-control', errors.department ? 'is-invalid' : '']" />
         <div class="invalid-feedback">{{ errors.department }}</div>

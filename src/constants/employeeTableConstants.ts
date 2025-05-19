@@ -13,6 +13,7 @@ export const SORT_KEYS = {
 } as const
 
 export const CSV_HEADERS = [
+  'Code',
   'Full Name',
   'Department',
   'Occupation',

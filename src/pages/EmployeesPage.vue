@@ -4,24 +4,29 @@ import { useRouter } from 'vue-router'
 import EmployeesTable from '@/components/employees/EmployeesTable.vue'
 import EmployeeModal from '@/components/employees/EmployeeModal.vue'
 import ConfirmDeleteModal from '@/components/employees/ConfirmDeleteModal.vue'
+import AlertMessage from '@/components/AlertMessage.vue'
 import type { Employee } from '@/types/Employee'
 import { useEmployees } from '@/composables/useEmployees'
 import { emitter } from '@/eventBus'
 import { ROUTES } from '@/constants/routes'
 import { EVENTS } from '@/constants/events'
-import { useTexts } from '@/i18n/useTexts'
+import { STATUS } from '@/constants/alertStatus'
+import { texts } from '@/i18n'
 
 
 const showDeleteModal = ref(false)
 const employeeToDelete = ref<Employee | null>(null)
 
-const { texts } = useTexts()
 
 const router = useRouter()
-const { employees, loadEmployees, deleteEmployee } = useEmployees()
+const { employees, loadEmployees, deleteEmployee, saveEmployees } = useEmployees()
 
 const selectedEmployee = ref<Employee | null>(null)  // currently selected employee for modal
 const showModal = ref(false)  // controls visibility of employee modal
+
+const alertVisible = ref(false)
+const alertMessage = ref('')
+const alertType = ref<'success' | 'error'>('success')
 
 // Load employees on component mount and listen for update events
 onMounted(() => {
@@ -68,6 +73,28 @@ function handleView(employee: Employee) {
   showModal.value = true
 }
 
+function onImportEmployees(newEmployees: Employee[]) {
+  if (newEmployees.length > 0) {
+    alertMessage.value = texts.utils.importCSV.success
+    alertType.value = 'success'
+    alertVisible.value = true
+  }
+
+  employees.value.push(...newEmployees)
+  saveEmployees()
+  emitter.emit(EVENTS.employeesUpdated)
+
+}
+
+function onImportEmployeesError(errors: string[]) {
+  if (errors.length > 0) {
+    alertMessage.value = errors.join('\n')
+    alertType.value = 'error'
+    alertVisible.value = true
+  }
+
+}
+
 // Close modal and clear selected employee
 function closeModal() {
   showModal.value = false
@@ -76,18 +103,25 @@ function closeModal() {
 </script>
 
 <template>
+  <AlertMessage v-model:modelValue="alertVisible" :message="alertMessage" :type="alertType" :duration="3000" />
   <div class="main-container position-relative">
     <h1 class="page-title">{{ texts.employeesPage.title }}</h1>
     <!-- Employees table with edit, delete, and view events -->
     <EmployeesTable :employees="employees" @edit-employee="handleEdit" @delete-employee="handleDelete"
-      @view-employee="handleView" />
+      @view-employee="handleView" @import-employees="onImportEmployees"
+      @import-employees-error="onImportEmployeesError" />
+
     <!-- Fixed button to create new employee -->
     <button class="btn btn-primary btn-create-fixed" @click="goToCreate">
       {{ texts.employeesPage.btnCreateEmployee }}
     </button>
+
     <!-- Employee details modal -->
     <EmployeeModal v-if="showModal" :employee="selectedEmployee" :show="showModal" @close="closeModal" />
+
+
   </div>
+
   <ConfirmDeleteModal v-if="showDeleteModal" :title="texts.employeesPage.modalDeleteTitle"
     :message="`${texts.employeesPage.modalDeleteMessage} ${employeeToDelete?.fullName}?`"
     :confirm-text="texts.employeesPage.modalDeleteConfirm" :cancel-text="texts.employeesPage.modalDeleteCancel"
