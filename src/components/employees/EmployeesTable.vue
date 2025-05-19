@@ -4,7 +4,9 @@ import type { Employee } from '@/types/Employee'
 import { useEmployeeTableLogic } from '@/composables/useEmployeeTableLogic'
 import { SORT_KEYS } from '@/constants/employeeTableConstants'
 import { formatEmploymentDate, formatTerminationDate } from '@/utils/formatDates'
+import { exportEmployeesToCSV } from '@/utils/exportCsv'
 import { useTexts } from '@/i18n/useTexts'
+
 const { texts } = useTexts()
 
 const props = defineProps<{ employees: Employee[] }>()
@@ -23,8 +25,8 @@ const sortAsc = ref(true)
 const {
   paginatedEmployees,
   totalPages,
-  changeSort,
-  exportToCSV
+  sortedEmployees,
+  changeSort
 } = useEmployeeTableLogic(
   toRef(props, 'employees'),
   searchQuery,
@@ -45,6 +47,11 @@ function onEdit(employee: Employee) {
 function onDelete(employee: Employee) {
   emit('delete-employee', employee)
 }
+
+function exportToCSV() {
+  exportEmployeesToCSV(sortedEmployees.value)
+}
+
 </script>
 
 

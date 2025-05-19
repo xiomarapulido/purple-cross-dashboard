@@ -1,9 +1,7 @@
-// composables/useEmployeeTableLogic.ts
 import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { Employee } from '@/types/Employee'
 import { SORT_KEYS } from '@/constants/employeeTableConstants'
-import { exportEmployeesToCSV } from '@/utils/exportCsv'
 
 export function useEmployeeTableLogic(
     employees: Ref<Employee[]>,
@@ -64,16 +62,11 @@ export function useEmployeeTableLogic(
         }
     }
 
-    function exportToCSV() {
-        exportEmployeesToCSV(sortedEmployees.value)
-    }
-
     return {
         filteredEmployees,
         sortedEmployees,
         paginatedEmployees,
         totalPages,
-        changeSort,
-        exportToCSV
+        changeSort
     }
 }
