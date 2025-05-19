@@ -1,0 +1,107 @@
+import { reactive, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
+import type { Employee } from '@/types/Employee'
+import { STORAGE_KEYS } from '@/constants/storageKeys'
+import { VALIDATION_MESSAGES } from '@/constants/employeeFormConstants'
+
+export function useEmployeeForm() {
+  const route = useRoute()
+
+  // Define validation schema using Yup with messages from constants
+  const schema = yup.object({
+    code: yup
+      .string()
+      .required(VALIDATION_MESSAGES.code)
+      .matches(/^[a-zA-Z0-9\-_\s]+$/, VALIDATION_MESSAGES.codeInvalid)
+      .test('unique-code', VALIDATION_MESSAGES.codeUnique, function(value) {
+        if (!value) return true
+
+        const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
+        if (!employeesJson) return true
+
+        const employees: Employee[] = JSON.parse(employeesJson)
+        const currentId = route.params.id ? Number(route.params.id) : null
+
+        // Check that the code is unique among other employees (excluding current one)
+        return !employees.some(e => e.code === value && e.id !== currentId)
+      }),
+    fullName: yup
+      .string()
+      .required(VALIDATION_MESSAGES.fullName)
+      .matches(/^[a-zA-Z\s]+$/, VALIDATION_MESSAGES.fullNameInvalid),
+    occupation: yup
+      .string()
+      .required(VALIDATION_MESSAGES.occupation)
+      .matches(/^[a-zA-Z\s]+$/, VALIDATION_MESSAGES.occupationInvalid),
+    department: yup
+      .string()
+      .required(VALIDATION_MESSAGES.department)
+      .matches(/^[a-zA-Z\s]+$/, VALIDATION_MESSAGES.departmentInvalid),
+    dateOfEmployment: yup.date().nullable(),
+    terminationDate: yup.date().nullable(),
+  })
+
+  // Reactive form data model
+  const formData = reactive<Employee>({
+    id: 0,
+    code: '',
+    fullName: '',
+    occupation: '',
+    department: '',
+    dateOfEmployment: null,
+    terminationDate: null,
+  })
+
+  // Initialize form with validation schema and initial values
+  const { handleSubmit, errors, resetForm } = useForm<Employee>({
+    validationSchema: schema,
+    initialValues: formData,
+  })
+
+  // Watch form data and reset the form whenever it changes
+  watch(
+    formData,
+    (newVal) => {
+      resetForm({ values: newVal })
+    },
+    { immediate: true, deep: true }
+  )
+
+  // On mount, load employee data if editing an existing one
+  onMounted(() => {
+    const idParam = route.params.id
+    if (idParam) {
+      const id = Number(idParam)
+      const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
+      if (!employeesJson) return
+      const employees: Employee[] = JSON.parse(employeesJson)
+      const employeeToEdit = employees.find((e) => e.id === id)
+      if (employeeToEdit) {
+        Object.assign(formData, employeeToEdit)
+      }
+    }
+  })
+
+  // Save or update employee in localStorage
+  function saveEmployee(employee: Employee) {
+    const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
+    const employees: Employee[] = employeesJson ? JSON.parse(employeesJson) : []
+
+    const index = employees.findIndex((e) => e.id === employee.id)
+    if (index >= 0) {
+      employees[index] = employee
+    } else {
+      employees.unshift(employee)
+    }
+    localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees))
+  }
+
+  return {
+    formData,
+    errors,
+    handleSubmit,
+    saveEmployee,
+  }
+}
