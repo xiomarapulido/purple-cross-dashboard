@@ -1,5 +1,6 @@
 import Papa from 'papaparse'
 import type { Employee } from '@/types/Employee'
+import { texts } from '@/i18n'
 
 interface ImportResult {
     validEmployees: Employee[]
@@ -7,7 +8,7 @@ interface ImportResult {
 }
 
 function isValidDate(value: string | null): boolean {
-    if (!value) return true // Permitir nulos
+    if (!value) return true
     const parsed = Date.parse(value)
     return !isNaN(parsed)
 }
@@ -18,6 +19,7 @@ export function importEmployeesFromCSV(
 ): Promise<ImportResult> {
     return new Promise((resolve) => {
         const reader = new FileReader()
+        const specialCharRegex = /^[\p{L}0-9\s.-]+$/u
 
         reader.onload = (e) => {
             const text = e.target?.result as string
@@ -34,40 +36,42 @@ export function importEmployeesFromCSV(
                     const newCodes = new Set<string>()
 
                     rows.forEach((row, index) => {
-                        const rowIndex = index + 2 // header = line 1
+                        const rowIndex = index + 2
 
-                        const code = row['Code']?.trim()
-                        const fullName = row['Full Name']?.trim()
-                        const department = row['Department']?.trim()
-                        const occupation = row['Occupation']?.trim()
-                        const dateOfEmploymentRaw = row['Date of Employment']?.trim() || null
-                        const terminationDateRaw = row['Termination Date']?.trim() || null
+                        const code = row[texts.employeeForm.fieldLabels.code]?.trim()
+                        const fullName = row[texts.employeeForm.fieldLabels.fullName]?.trim()
+                        const department = row[texts.employeeForm.fieldLabels.department]?.trim()
+                        const occupation = row[texts.employeeForm.fieldLabels.occupation]?.trim()
+                        const dateOfEmploymentRaw = row[texts.employeeForm.fieldLabels.dateOfEmployment]?.trim() || null
+                        const terminationDateRaw = row[texts.employeeForm.fieldLabels.terminationDate]?.trim() || null
 
-                        // Validaciones obligatorias
                         if (!code || !fullName || !department || !occupation) {
-                            errors.push(`Fila ${rowIndex}: Todos los campos obligatorios (Code, Full Name, Department, Occupation) deben estar presentes.`)
+                            errors.push(`${texts.utils.importCSV.errors.row} ${rowIndex}: ${texts.utils.importCSV.errors.required}`)
                             return
                         }
 
-                        // Validación de duplicados
                         if (existingCodes.has(code)) {
-                            errors.push(`Fila ${rowIndex}: El código "${code}" ya existe en el sistema.`)
+                            errors.push(`${texts.utils.importCSV.errors.row} ${rowIndex}: ${texts.utils.importCSV.errors.code} "${code}" ${texts.utils.importCSV.errors.alreadyExists}`)
                             return
                         }
 
                         if (newCodes.has(code)) {
-                            errors.push(`Fila ${rowIndex}: El código "${code}" está duplicado en el archivo.`)
+                            errors.push(`${texts.utils.importCSV.errors.row} ${rowIndex}: ${texts.utils.importCSV.errors.code} "${code}" ${texts.utils.importCSV.errors.duplicated}`)
                             return
                         }
 
-                        // Validación de fechas
                         if (!isValidDate(dateOfEmploymentRaw)) {
-                            errors.push(`Fila ${rowIndex}: "Date of Employment" no tiene un formato de fecha válido.`)
+                            errors.push(`${texts.utils.importCSV.errors.row} ${rowIndex}: ${texts.utils.importCSV.errors.invalidDate}`)
                             return
                         }
 
                         if (!isValidDate(terminationDateRaw)) {
-                            errors.push(`Fila ${rowIndex}: "Termination Date" no tiene un formato de fecha válido.`)
+                            errors.push(`${texts.utils.importCSV.errors.row} ${rowIndex}: ${texts.utils.importCSV.errors.invalidFormat}`)
+                            return
+                        }
+
+                        if (![code, fullName, department, occupation].every(field => specialCharRegex.test(field))) {
+                            errors.push(`${texts.utils.importCSV.errors.row} ${rowIndex}: ${texts.utils.importCSV.errors.specialCharacters}`)
                             return
                         }
 

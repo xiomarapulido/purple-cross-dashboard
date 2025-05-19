@@ -23,10 +23,10 @@ export const en = {
             departmentInvalid: 'Department contains invalid characters',
         },
         fieldLabels: {
-            code: 'Code *',
-            fullName: 'Full Name *',
-            occupation: 'Occupation *',
-            department: 'Department *',
+            code: 'Code',
+            fullName: 'Full Name',
+            occupation: 'Occupation',
+            department: 'Department',
             dateOfEmployment: 'Date of Employment',
             terminationDate: 'Termination Date',
         },
@@ -56,6 +56,7 @@ export const en = {
         },
         buttonLabels: {
             exportCSV: 'Export CSV',
+            importCSV: 'Import CSV',
             previous: 'Previous',
             next: 'Next',
         },
@@ -65,6 +66,21 @@ export const en = {
         messages: {
             rowsPerPage: 'Rows per page:',
             noResults: 'No results found.',
+        }
+    },
+    utils: {
+        importCSV: {
+            success: 'Import completed successfully',
+            errors: {
+                row: 'Row',
+                code: 'The code',
+                alreadyExists: 'already exists in the system.',
+                duplicated: 'is duplicated in the file.',
+                invalidDate: 'Date of Employment" is not a valid date format.',
+                invalidFormat: 'Termination Date" is not a valid date format.',
+                specialCharacters: 'None of the required fields can contain special characters',
+                required: 'All required fields (Code, Full Name, Department, Occupation) must be present.'
+            }
         }
     }
 }

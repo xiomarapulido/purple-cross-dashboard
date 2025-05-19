@@ -16,6 +16,7 @@ const emit = defineEmits<{
   (e: 'delete-employee', employee: Employee): void
   (e: 'view-employee', employee: Employee): void
   (e: 'import-employees', employees: Employee[]): void
+  (e: 'import-employees-error', errors: string[]): void
 }>()
 
 const searchQuery = ref('')
@@ -68,7 +69,7 @@ async function onFileChange(event: Event) {
   const { validEmployees, errors } = await importEmployeesFromCSV(file, props.employees)
 
   if (errors.length) {
-    alert('Errores al importar:\n' + errors.join('\n'))
+    emit('import-employees-error', errors)
   }
 
   if (validEmployees.length) {
@@ -98,7 +99,7 @@ async function onFileChange(event: Event) {
     </button>
     <input type="file" class="d-none" ref="fileInput" accept=".csv" @change="onFileChange" />
     <button @click="triggerFileInput" class="btn btn-outline-primary">
-      {{ texts.employeeTable.buttonLabels.importCSV || 'Importar CSV' }}
+      {{ texts.employeeTable.buttonLabels.importCSV }}
     </button>
 
   </div>
