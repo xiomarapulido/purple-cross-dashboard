@@ -3,12 +3,17 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import EmployeesTable from '@/components/employees/EmployeesTable.vue'
 import EmployeeModal from '@/components/employees/EmployeeModal.vue'
+import ConfirmDeleteModal from '@/components/employees/ConfirmDeleteModal.vue'
 import type { Employee } from '@/types/Employee'
 import { useEmployees } from '@/composables/useEmployees'
 import { emitter } from '@/eventBus'
 import { ROUTES } from '@/constants/routes'
 import { EVENTS } from '@/constants/events'
 import { useTexts } from '@/i18n/useTexts'
+
+
+const showDeleteModal = ref(false)
+const employeeToDelete = ref<Employee | null>(null)
 
 const { texts } = useTexts()
 
@@ -34,12 +39,22 @@ function handleEdit(employee: Employee) {
   router.push({ name: ROUTES.edit, params: { id: employee.id } })
 }
 
-// Confirm deletion and trigger employee removal
 function handleDelete(employee: Employee) {
-  const confirmed = confirm(`Do you want to delete ${employee.fullName}?`)
-  if (confirmed) {
-    deleteEmployee(employee.id)
+  employeeToDelete.value = employee
+  showDeleteModal.value = true
+}
+
+function confirmDelete() {
+  if (employeeToDelete.value) {
+    deleteEmployee(employeeToDelete.value.id)
+    showDeleteModal.value = false
+    employeeToDelete.value = null
   }
+}
+
+function cancelDelete() {
+  showDeleteModal.value = false
+  employeeToDelete.value = null
 }
 
 // Navigate to employee creation page
@@ -73,6 +88,10 @@ function closeModal() {
     <!-- Employee details modal -->
     <EmployeeModal v-if="showModal" :employee="selectedEmployee" :show="showModal" @close="closeModal" />
   </div>
+  <ConfirmDeleteModal v-if="showDeleteModal" :title="texts.employeesPage.modalDeleteTitle"
+    :message="`${texts.employeesPage.modalDeleteMessage} ${employeeToDelete?.fullName}?`"
+    :confirm-text="texts.employeesPage.modalDeleteConfirm" :cancel-text="texts.employeesPage.modalDeleteCancel"
+    @confirm="confirmDelete" @cancel="cancelDelete" />
 </template>
 
 <style scoped>
