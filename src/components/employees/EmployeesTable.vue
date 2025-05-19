@@ -1,30 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, toRef } from 'vue'
 import type { Employee } from '@/types/Employee'
-import { exportEmployeesToCSV } from '@/utils/exportCsv'
-import {
-  EVENTS,
-  SORT_KEYS,
-  TABLE_HEADERS,
-  BUTTON_LABELS,
-  PLACEHOLDERS,
-  MESSAGES
-} from '@/constants/employeeTableConstants'
-
-import {
-  formatEmploymentDate,
-  formatTerminationDate,
-} from '@/utils/formatDates'
+import { useEmployeeTableLogic } from '@/composables/useEmployeeTableLogic'
+import { SORT_KEYS, EVENTS, TABLE_HEADERS, BUTTON_LABELS, PLACEHOLDERS, MESSAGES } from '@/constants/employeeTableConstants'
+import { formatEmploymentDate, formatTerminationDate } from '@/utils/formatDates'
 
 const props = defineProps<{ employees: Employee[] }>()
-
-
 const emit = defineEmits<{
   (e: 'edit-employee', employee: Employee): void
   (e: 'delete-employee', employee: Employee): void
   (e: 'view-employee', employee: Employee): void
 }>()
-
 
 const searchQuery = ref('')
 const rowsPerPage = ref(5)
@@ -32,56 +18,19 @@ const currentPage = ref(1)
 const sortKey = ref<keyof Employee>(SORT_KEYS.FULL_NAME)
 const sortAsc = ref(true)
 
-const filteredEmployees = computed(() => {
-  const query = searchQuery.value.toLowerCase()
-  return props.employees.filter(
-    (emp) =>
-      emp.fullName.toLowerCase().includes(query) ||
-      emp.department.toLowerCase().includes(query) ||
-      emp.occupation.toLowerCase().includes(query)
-  )
-})
-
-const sortedEmployees = computed(() => {
-  return [...filteredEmployees.value].sort((a, b) => {
-    let valA = a[sortKey.value]
-    let valB = b[sortKey.value]
-
-    if (
-      sortKey.value === SORT_KEYS.DATE_OF_EMPLOYMENT ||
-      sortKey.value === SORT_KEYS.TERMINATION_DATE
-    ) {
-      valA = valA ? new Date(valA).getTime() : 0
-      valB = valB ? new Date(valB).getTime() : 0
-    } else {
-      valA = valA?.toString().toLowerCase() ?? ''
-      valB = valB?.toString().toLowerCase() ?? ''
-    }
-
-    if (valA < valB) return sortAsc.value ? -1 : 1
-    if (valA > valB) return sortAsc.value ? 1 : -1
-    return 0
-  })
-})
-
-const paginatedEmployees = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage.value
-  return sortedEmployees.value.slice(start, start + rowsPerPage.value)
-})
-
-const totalPages = computed(() =>
-  Math.ceil(sortedEmployees.value.length / rowsPerPage.value)
+const {
+  paginatedEmployees,
+  totalPages,
+  changeSort,
+  exportToCSV
+} = useEmployeeTableLogic(
+  toRef(props, 'employees'),
+  searchQuery,
+  rowsPerPage,
+  currentPage,
+  sortKey,
+  sortAsc
 )
-
-function changeSort(key: keyof typeof SORT_KEYS) {
-  const employeeKey = SORT_KEYS[key]
-  if (sortKey.value === employeeKey) {
-    sortAsc.value = !sortAsc.value
-  } else {
-    sortKey.value = employeeKey
-    sortAsc.value = true
-  }
-}
 
 function onView(employee: Employee) {
   emit('view-employee', employee)
@@ -94,13 +43,8 @@ function onEdit(employee: Employee) {
 function onDelete(employee: Employee) {
   emit('delete-employee', employee)
 }
-
-
-function exportToCSV() {
-  exportEmployeesToCSV(sortedEmployees.value)
-}
-
 </script>
+
 
 <template>
   <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
