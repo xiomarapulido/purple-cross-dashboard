@@ -1,7 +1,11 @@
 export const en = {
     employeesPage: {
         title: 'Employee Management',
-        btnCreateEmployee: 'Create Employee'
+        btnCreateEmployee: 'Create Employee',
+        modalDeleteTitle: 'Confirm delete',
+        modalDeleteMessage: 'Are you sure you want to delete',
+        modalDeleteConfirm: 'Yes, delete',
+        modalDeleteCancel: 'Cancel'
     },
     navbar: {
         title: 'Welcome,'
