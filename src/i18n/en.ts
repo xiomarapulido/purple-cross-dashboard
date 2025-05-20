@@ -46,7 +46,8 @@ export const en = {
         messages: {
             editSuccess: 'the employee has been successfully updated',
             createSuccess: 'The employee has been created successfully',
-            error: 'An unexpected error occurred, please try again.'
+            error: 'An unexpected error occurred, please try again.',
+            deleteSuccess: 'The employee has been successfully deleted.',
         },
     },
     employeeTable: {

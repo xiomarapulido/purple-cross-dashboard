@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import EmployeesTable from '@/components/employees/EmployeesTable.vue'
 import EmployeeModal from '@/components/employees/EmployeeModal.vue'
 import ConfirmDeleteModal from '@/components/employees/ConfirmDeleteModal.vue'
-import AlertMessage from '@/components/AlertMessage.vue'
 import type { Employee } from '@/types/Employee'
 import { useEmployees } from '@/composables/useEmployees'
 import { emitter } from '@/eventBus'
@@ -12,21 +11,18 @@ import { ROUTES } from '@/constants/routes'
 import { EVENTS } from '@/constants/events'
 import { STATUS } from '@/constants/status'
 import { texts } from '@/i18n'
+import { useGlobalAlert } from '@/composables/useGlobalAlert'
 
 
 const showDeleteModal = ref(false)
 const employeeToDelete = ref<Employee | null>(null)
 
-
+const { showAlert } = useGlobalAlert()
 const router = useRouter()
 const { employees, loadEmployees, deleteEmployee, saveEmployees, errorMessage } = useEmployees()
 
 const selectedEmployee = ref<Employee | null>(null)  // currently selected employee for modal
 const showModal = ref(false)  // controls visibility of employee modal
-
-const alertVisible = ref(false)
-const alertMessage = ref('')
-const alertType = ref<STATUS.success | STATUS.error>(STATUS.success)
 
 // Load employees on component mount and listen for update events
 onMounted(() => {
@@ -59,9 +55,14 @@ function handleDelete(employee: Employee) {
   showDeleteModal.value = true
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (employeeToDelete.value) {
-    deleteEmployee(employeeToDelete.value.id)
+    const result = await deleteEmployee(employeeToDelete.value.id)
+    if (result.success) {
+      showAlert(texts.employeeForm.messages.deleteSuccess, STATUS.success, true)
+    } else {
+      showAlert(texts.employeeForm.messages.error, STATUS.error, true)
+    }
     showDeleteModal.value = false
     employeeToDelete.value = null
   }
@@ -107,15 +108,9 @@ function closeModal() {
   selectedEmployee.value = null
 }
 
-function showAlert(message: string, type: any, isVisible: boolean) {
-  alertMessage.value = message
-  alertType.value = type
-  alertVisible.value = isVisible
-}
 </script>
 
 <template>
-  <AlertMessage v-model:modelValue="alertVisible" :message="alertMessage" :type="alertType" :duration="3000" />
   <div class="main-container position-relative">
     <h1 class="page-title">{{ texts.employeesPage.title }}</h1>
     <!-- Employees table with edit, delete, and view events -->
