@@ -67,7 +67,7 @@ export const en = {
             next: 'Next',
         },
         placeholders: {
-            search: 'Search employees...',
+            search: 'Search...',
         },
         messages: {
             rowsPerPage: 'Rows:',

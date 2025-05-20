@@ -11,7 +11,7 @@ const { alertVisible, alertMessage, alertType } = useGlobalAlert()
     v-model:modelValue="alertVisible"
     :message="alertMessage"
     :type="alertType"
-    :duration="3000"
+    :duration="5000"
   />
   <div class="d-flex flex-column min-vh-100 bg-light">
     <!-- Header/Navbar -->
