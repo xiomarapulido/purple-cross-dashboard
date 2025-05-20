@@ -70,7 +70,7 @@ export const en = {
             search: 'Search employees...',
         },
         messages: {
-            rowsPerPage: 'Rows per page:',
+            rowsPerPage: 'Rows:',
             noResults: 'No results found.',
         }
     },

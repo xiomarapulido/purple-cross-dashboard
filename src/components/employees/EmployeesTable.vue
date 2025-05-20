@@ -84,29 +84,45 @@ async function onFileChange(event: Event) {
 
 <template>
   <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <input v-model="searchQuery" type="text" class="form-control w-auto"
-      :placeholder="texts.employeeTable.placeholders.search" />
-    <div class="d-flex align-items-center gap-2">
-      <label for="rowsPerPage" class="form-label mb-0">{{ texts.employeeTable.messages.rowsPerPage }}</label>
-      <select id="rowsPerPage" v-model="rowsPerPage" class="form-select w-auto">
-        <option :value="5">5</option>
-        <option :value="10">10</option>
-        <option :value="25">25</option>
-      </select>
-    </div>
-    <button @click="exportToCSV" class="btn btn-outline-success">
-      {{ texts.employeeTable.buttonLabels.exportCSV }}
-    </button>
-    <input type="file" class="d-none" ref="fileInput" accept=".csv" @change="onFileChange" />
-    <button @click="triggerFileInput" class="btn btn-outline-primary">
-      {{ texts.employeeTable.buttonLabels.importCSV }}
-    </button>
 
+    <div class="col-12">
+      <div class="row">
+        <div class="mb-3 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+          <input v-model="searchQuery" type="text" class="form-control w-auto"
+            :placeholder="texts.employeeTable.placeholders.search" />
+        </div>
+        <div class="mb-3 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 text-end">
+          <div class="d-flex align-items-center justify-content-end gap-2">
+            <label for="rowsPerPage" class="form-label mb-0 small">
+              {{ texts.employeeTable.messages.rowsPerPage }}
+            </label>
+            <select id="rowsPerPage" v-model="rowsPerPage" class="form-select form-select-sm"
+              style="width: auto; min-width: 80px;">
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="25">25</option>
+            </select>
+          </div>
+
+        </div>
+        <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 text-start text-md-end">
+          <button @click="exportToCSV" class="btn btn-outline-success">
+            {{ texts.employeeTable.buttonLabels.exportCSV }}
+          </button>
+        </div>
+        <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 text-end">
+          <input type="file" class="d-none" ref="fileInput" accept=".csv" @change="onFileChange" />
+          <button @click="triggerFileInput" class="btn btn-outline-primary">
+            {{ texts.employeeTable.buttonLabels.importCSV }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="table-responsive">
     <table class="table table-hover table-bordered align-middle text-center">
-      <thead class="table-light">
+      <thead class="table-primary">
         <tr>
           <th @click="changeSort('FULL_NAME')" role="button">
             {{ texts.employeeTable.tableHeaders.name }}

@@ -44,7 +44,7 @@ function onCancel() {
 
 <template>
   <div class="container py-4">
-    <h3>{{ pageTitle }}</h3>
+    <h3 class="page-title">{{ pageTitle }}</h3>
     <form @submit.prevent="onSubmit" novalidate>
       <div class="mb-3">
         <label for="code">{{ texts.employeeForm.fieldLabels.code }}*</label>
@@ -93,3 +93,14 @@ function onCancel() {
     </form>
   </div>
 </template>
+<style scoped>
+.page-title {
+  color: var(--purple);
+  font-size: 1.625rem;
+  margin-bottom: 1.875rem;
+}
+
+label {
+  font-weight: bold;
+}
+</style>
