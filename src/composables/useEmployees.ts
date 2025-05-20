@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import type { Employee } from '@/types/Employee'
 import { STORAGE_KEYS } from '@/constants/storageKeys'
-import { simulateApiFetch } from '@/utils/apiSimulator'
+import { simulateApiFetch, simulateApiDelete } from '@/utils/apiSimulator'
 import { texts } from '@/i18n'
 
 const employees = ref<Employee[]>([])
@@ -33,10 +33,20 @@ function saveEmployees() {
 }
 
 // Remove employee by ID and update storage
-function deleteEmployee(id: number) {
-  employees.value = employees.value.filter(e => e.id !== id)
-  saveEmployees()
+async function deleteEmployee(id: number): Promise<{ success: boolean; message?: string }> {
+  try {
+    await simulateApiDelete(id)
+    employees.value = employees.value.filter(e => e.id !== id)
+    saveEmployees()
+
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+    }
+  }
 }
+
 
 // Composable exposing employees and related methods
 export function useEmployees() {
