@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import type { Ref } from 'vue'
 import type { Employee } from '@/types/Employee'
 import { SORT_KEYS } from '@/constants/employeeTableConstants'
+import { formatEmploymentDate, formatTerminationDate } from '@/utils/formatDates'
 
 /**
  * Composable that encapsulates filtering, sorting, and pagination logic
@@ -26,13 +27,24 @@ export function useEmployeeTableLogic(
     // Filter employees by search query matching fullName, department, or occupation
     const filteredEmployees = computed(() => {
         const query = searchQuery.value.toLowerCase()
-        return employees.value.filter(
-            emp =>
-                emp.fullName.toLowerCase().includes(query) ||
-                emp.department.toLowerCase().includes(query) ||
-                emp.occupation.toLowerCase().includes(query)
-        )
-    })
+      
+        return employees.value.filter(emp => {
+          const fullName = emp.fullName.toLowerCase()
+          const department = emp.department.toLowerCase()
+          const occupation = emp.occupation.toLowerCase()
+      
+          const formattedEmployment = formatEmploymentDate(emp.dateOfEmployment).toLowerCase()
+          const formattedTermination = formatTerminationDate(emp.terminationDate).toLowerCase()
+      
+          return (
+            fullName.includes(query) ||
+            department.includes(query) ||
+            occupation.includes(query) ||
+            formattedEmployment.includes(query) ||
+            formattedTermination.includes(query)
+          )
+        })
+      })      
 
     // Sort the filtered employees based on the current sort key and order
     const sortedEmployees = computed(() => {
