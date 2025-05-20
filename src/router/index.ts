@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 import EmployeesPage from '@/pages/EmployeesPage.vue'
 import EmployeesForm from '@/components/employees/EmployeesForm.vue'
-import { ROUTES } from '@/constants/routes'  
+import { ROUTES } from '@/constants/routes'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -12,19 +12,18 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/employees',
-    name: ROUTES.list,  
+    name: ROUTES.list,
     component: EmployeesPage
   },
   {
     path: '/employees/new',
-    name: ROUTES.create,  
+    name: ROUTES.create,
     component: EmployeesForm
   },
   {
     path: '/employees/:id/edit',
-    name: ROUTES.edit, 
-    component: EmployeesForm,
-    props: true,
+    name: ROUTES.edit,
+    component: EmployeesForm
   }
 ]
 

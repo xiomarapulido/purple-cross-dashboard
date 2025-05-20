@@ -10,7 +10,7 @@ import { useEmployees } from '@/composables/useEmployees'
 import { emitter } from '@/eventBus'
 import { ROUTES } from '@/constants/routes'
 import { EVENTS } from '@/constants/events'
-import { STATUS } from '@/constants/alertStatus'
+import { STATUS } from '@/constants/status'
 import { texts } from '@/i18n'
 
 
@@ -19,20 +19,30 @@ const employeeToDelete = ref<Employee | null>(null)
 
 
 const router = useRouter()
-const { employees, loadEmployees, deleteEmployee, saveEmployees } = useEmployees()
+const { employees, loadEmployees, deleteEmployee, saveEmployees, errorMessage } = useEmployees()
 
 const selectedEmployee = ref<Employee | null>(null)  // currently selected employee for modal
 const showModal = ref(false)  // controls visibility of employee modal
 
 const alertVisible = ref(false)
 const alertMessage = ref('')
-const alertType = ref<'success' | 'error'>('success')
+const alertType = ref<STATUS.success | STATUS.error>(STATUS.success)
 
 // Load employees on component mount and listen for update events
 onMounted(() => {
   loadEmployees()
   emitter.on(EVENTS.employeesUpdated, loadEmployees)  // refresh list on event
 })
+
+onMounted(async () => {
+  await loadEmployees()
+  if (errorMessage.value) {
+    showAlert(errorMessage.value, STATUS.error, true)
+  }
+
+  emitter.on(EVENTS.employeesUpdated, loadEmployees)
+})
+
 
 // Clean up event listener on component unmount
 onUnmounted(() => {
@@ -75,9 +85,7 @@ function handleView(employee: Employee) {
 
 function onImportEmployees(newEmployees: Employee[]) {
   if (newEmployees.length > 0) {
-    alertMessage.value = texts.utils.importCSV.success
-    alertType.value = 'success'
-    alertVisible.value = true
+    showAlert(texts.utils.importCSV.success, STATUS.success, true)
   }
 
   employees.value.push(...newEmployees)
@@ -88,9 +96,7 @@ function onImportEmployees(newEmployees: Employee[]) {
 
 function onImportEmployeesError(errors: string[]) {
   if (errors.length > 0) {
-    alertMessage.value = errors.join('\n')
-    alertType.value = 'error'
-    alertVisible.value = true
+    showAlert(errors.join('\n'), STATUS.error, true)
   }
 
 }
@@ -99,6 +105,12 @@ function onImportEmployeesError(errors: string[]) {
 function closeModal() {
   showModal.value = false
   selectedEmployee.value = null
+}
+
+function showAlert(message: string, type: any, isVisible: boolean) {
+  alertMessage.value = message
+  alertType.value = type
+  alertVisible.value = isVisible
 }
 </script>
 

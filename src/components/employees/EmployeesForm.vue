@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useEmployeeForm } from '@/composables/useEmployeeForm'
 import { ROUTES } from '@/constants/routes'
 import { EVENTS } from '@/constants/events'
 import { texts } from '@/i18n'
+import { STATUS } from '@/constants/status'
+import AlertMessage from '@/components/AlertMessage.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -13,19 +15,40 @@ const { formData, errors, handleSubmit, saveEmployee } = useEmployeeForm()
 const pageTitle = computed(() => (route.params.id ? texts.employeeForm.actions.edit : texts.employeeForm.actions.create))
 const submitLabel = computed(() => (route.params.id ? texts.employeeForm.actions.save : texts.employeeForm.actions.createTetx))
 
-const onSubmit = handleSubmit(() => {
+const alertVisible = ref(false)
+const alertMessage = ref('')
+const alertType = ref<STATUS.success | STATUS.error>(STATUS.success)
+const alertSuccessMsg = computed(() => (route.params.id ? texts.employeeForm.messages.editSuccess : texts.employeeForm.messages.createSuccess))
+
+const onSubmit = handleSubmit(async () => {
   const employeeId = route.params.id ? Number(route.params.id) : Math.floor(Math.random() * 1000000)
-  saveEmployee({ id: employeeId, ...formData })
-  window.dispatchEvent(new Event(EVENTS.employeesUpdated))
-  router.push({ name: ROUTES.list })
+
+  const result = await saveEmployee({ id: employeeId, ...formData })
+
+  if (result.success) {
+    showAlert(alertSuccessMsg.value, STATUS.success, true)
+    window.dispatchEvent(new Event(EVENTS.employeesUpdated))
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    router.push({ name: ROUTES.list })
+  } else {
+    showAlert(texts.employeeForm.messages.error, STATUS.error, true)
+  }
 })
 
 function onCancel() {
   router.push({ name: ROUTES.list })
 }
+
+function showAlert(message: string, type: any, isVisible: boolean) {
+  alertMessage.value = message
+  alertType.value = type
+  alertVisible.value = isVisible
+}
 </script>
 
 <template>
+  <AlertMessage v-model:modelValue="alertVisible" :message="alertMessage" :type="alertType" :duration="3000" />
   <div class="container py-4">
     <h3>{{ pageTitle }}</h3>
     <form @submit.prevent="onSubmit" novalidate>
