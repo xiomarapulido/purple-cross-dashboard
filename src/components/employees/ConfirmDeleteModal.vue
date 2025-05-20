@@ -2,7 +2,7 @@
   <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5)">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header main-bg text-white">
           <h5 class="modal-title">{{ title }}</h5>
           <button type="button" class="btn-close" @click="$emit('cancel')"></button>
         </div>
@@ -11,7 +11,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" @click="$emit('cancel')">{{ cancelText }}</button>
-          <button type="button" class="btn btn-danger" @click="$emit('confirm')">{{ confirmText }}</button>
+          <button type="button" class="btn main-bg text-white" @click="$emit('confirm')">{{ confirmText }}</button>
         </div>
       </div>
     </div>
@@ -30,5 +30,9 @@ defineProps<{
 <style scoped>
 .modal {
   display: block;
+}
+
+.main-bg {
+  background-color: var(--purple);
 }
 </style>

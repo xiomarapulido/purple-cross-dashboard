@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Employee } from '@/types/Employee'
+import { formatEmploymentDate, formatTerminationDate } from '@/utils/formatDates'
 import { useTexts } from '@/i18n/useTexts'
 const { texts } = useTexts()
 
@@ -19,35 +20,39 @@ function backdropClick(e: MouseEvent) {
 
 <template>
   <div v-if="show">
-    <!-- Backdrop separado -->
     <div class="modal-backdrop fade show" @click="backdropClick"></div>
-
-    <!-- Modal centrado -->
     <div class="modal fade show" tabindex="-1" aria-modal="true" role="dialog" style="display: block;">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
+          <div class="modal-header modal-header-bg text-white">
             <h5 class="modal-title">Employee Details</h5>
             <button type="button" class="btn-close btn-close-white" aria-label="Close" @click="close"></button>
           </div>
           <div class="modal-body" v-if="employee">
-            <dl class="row">
-              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.name }}</dt>
-              <dd class="col-sm-8">{{ employee.fullName }}</dd>
-
-              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.department }}</dt>
-              <dd class="col-sm-8">{{ employee.department }}</dd>
-
-              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.position }}</dt>
-              <dd class="col-sm-8">{{ employee.occupation }}</dd>
-
-              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.hired }}</dt>
-              <dd class="col-sm-8">{{ employee.dateOfEmployment ?? '-' }}</dd>
-
-              <dt class="col-sm-4">{{ texts.employeeTable.tableHeaders.terminationDate }}</dt>
-              <dd class="col-sm-8">{{ employee.terminationDate ?? '-' }}</dd>
-            </dl>
+            <div class="d-flex flex-wrap">
+              <div class="d-flex flex-column col-6">
+                <dt>{{ texts.employeeTable.tableHeaders.name }}</dt>
+                <dd>{{ employee.fullName }}</dd>
+              </div>
+              <div class="d-flex flex-column col-6">
+                <dt>{{ texts.employeeTable.tableHeaders.department }}</dt>
+                <dd>{{ employee.department }}</dd>
+              </div>
+              <div class="d-flex flex-column col-6">
+                <dt>{{ texts.employeeTable.tableHeaders.position }}</dt>
+                <dd>{{ employee.occupation }}</dd>
+              </div>
+              <div class="d-flex flex-column col-6">
+                <dt>{{ texts.employeeTable.tableHeaders.hired }}</dt>
+                <dd>{{ formatEmploymentDate(employee.dateOfEmployment) }}</dd>
+              </div>
+              <div class="d-flex flex-column col-6">
+                <dt>{{ texts.employeeTable.tableHeaders.terminationDate }}</dt>
+                <dd>{{ formatTerminationDate(employee.terminationDate) }}</dd>
+              </div>
+            </div>
           </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="close">
               {{ texts.employeeTable.tableHeaders.close }}
@@ -60,6 +65,14 @@ function backdropClick(e: MouseEvent) {
 </template>
 
 <style scoped>
+.modal-header-bg {
+  background-color: var(--purple);
+}
+
+.modal-body {
+  padding-left: 2.188rem;
+}
+
 .modal-backdrop {
   position: fixed;
   top: 0;
