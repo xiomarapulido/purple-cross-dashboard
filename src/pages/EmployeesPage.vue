@@ -13,23 +13,28 @@ import { STATUS } from '@/constants/status'
 import { texts } from '@/i18n'
 import { useGlobalAlert } from '@/composables/useGlobalAlert'
 
-
+// Reactive state to control delete confirmation modal visibility
 const showDeleteModal = ref(false)
+// Holds the employee object selected for deletion
 const employeeToDelete = ref<Employee | null>(null)
 
 const { showAlert } = useGlobalAlert()
 const router = useRouter()
+// Composable managing employees data and operations
 const { employees, loadEmployees, deleteEmployee, saveEmployees, errorMessage } = useEmployees()
 
-const selectedEmployee = ref<Employee | null>(null)  // currently selected employee for modal
-const showModal = ref(false)  // controls visibility of employee modal
+// Currently selected employee for viewing/editing in modal
+const selectedEmployee = ref<Employee | null>(null)
+// Controls visibility of employee detail modal
+const showModal = ref(false)
 
-// Load employees on component mount and listen for update events
+// Load employees when component mounts and set up event listener for updates
 onMounted(() => {
   loadEmployees()
-  emitter.on(EVENTS.employeesUpdated, loadEmployees)  // refresh list on event
+  emitter.on(EVENTS.employeesUpdated, loadEmployees)  // Reload employee list on update event
 })
 
+// Handle initial load and show error alert if loading employees failed
 onMounted(async () => {
   await loadEmployees()
   if (errorMessage.value) {
@@ -39,22 +44,23 @@ onMounted(async () => {
   emitter.on(EVENTS.employeesUpdated, loadEmployees)
 })
 
-
-// Clean up event listener on component unmount
+// Remove event listener when component unmounts to avoid memory leaks
 onUnmounted(() => {
   emitter.off(EVENTS.employeesUpdated, loadEmployees)
 })
 
-// Navigate to edit page with employee id as param
+// Navigate to edit page for the selected employee
 function handleEdit(employee: Employee) {
   router.push({ name: ROUTES.edit, params: { id: employee.id } })
 }
 
+// Open delete confirmation modal for selected employee
 function handleDelete(employee: Employee) {
   employeeToDelete.value = employee
   showDeleteModal.value = true
 }
 
+// Confirm deletion, call delete API, show alert based on success, then close modal
 async function confirmDelete() {
   if (employeeToDelete.value) {
     const result = await deleteEmployee(employeeToDelete.value.id)
@@ -68,22 +74,24 @@ async function confirmDelete() {
   }
 }
 
+// Cancel delete operation and close confirmation modal
 function cancelDelete() {
   showDeleteModal.value = false
   employeeToDelete.value = null
 }
 
-// Navigate to employee creation page
+// Navigate to the employee creation page
 function goToCreate() {
   router.push({ name: ROUTES.create })
 }
 
-// Show employee details in modal
+// Show employee details in a modal
 function handleView(employee: Employee) {
   selectedEmployee.value = employee
   showModal.value = true
 }
 
+// Handle successful import of employees: add new employees and save, then emit update event
 function onImportEmployees(newEmployees: Employee[]) {
   if (newEmployees.length > 0) {
     showAlert(texts.utils.importCSV.success, STATUS.success, true)
@@ -92,22 +100,20 @@ function onImportEmployees(newEmployees: Employee[]) {
   employees.value.push(...newEmployees)
   saveEmployees()
   emitter.emit(EVENTS.employeesUpdated)
-
 }
 
+// Show error alerts if import fails
 function onImportEmployeesError(errors: string[]) {
   if (errors.length > 0) {
     showAlert(errors.join('\n'), STATUS.error, true)
   }
-
 }
 
-// Close modal and clear selected employee
+// Close the employee detail modal and reset selected employee
 function closeModal() {
   showModal.value = false
   selectedEmployee.value = null
 }
-
 </script>
 
 <template>
@@ -125,10 +131,9 @@ function closeModal() {
 
     <!-- Employee details modal -->
     <EmployeeModal v-if="showModal" :employee="selectedEmployee" :show="showModal" @close="closeModal" />
-
-
   </div>
 
+  <!-- Delete confirmation modal -->
   <ConfirmDeleteModal v-if="showDeleteModal" :title="texts.employeesPage.modalDeleteTitle"
     :message="`${texts.employeesPage.modalDeleteMessage} ${employeeToDelete?.fullName}?`"
     :confirm-text="texts.employeesPage.modalDeleteConfirm" :cancel-text="texts.employeesPage.modalDeleteCancel"
