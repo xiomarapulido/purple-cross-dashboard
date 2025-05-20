@@ -10,7 +10,9 @@ import { simulateApiUpdate } from '@/utils/apiSimulator'
 export function useEmployeeForm() {
   const route = useRoute()
 
-  // Define validation schema using Yup with messages from constants
+  // Define validation schema using Yup with localized messages
+  // Validates fields like code, fullName, occupation, department, and dates
+  // Custom test ensures code is unique excluding current employee when editing
   const schema = yup.object({
     code: yup
       .string()
@@ -25,7 +27,7 @@ export function useEmployeeForm() {
         const employees: Employee[] = JSON.parse(employeesJson)
         const currentId = route.params.id ? Number(route.params.id) : null
 
-        // Check that the code is unique among other employees (excluding current one)
+        // Check uniqueness of code among all employees except current one
         return !employees.some(e => e.code === value && e.id !== currentId)
       }),
     fullName: yup
@@ -40,11 +42,11 @@ export function useEmployeeForm() {
       .string()
       .required(texts.employeeForm.validationMessages.department)
       .matches(/^[a-zA-Z\s]+$/, texts.employeeForm.validationMessages.departmentInvalid),
-    dateOfEmployment: yup.date().nullable(),
+    dateOfEmployment: yup.date().nullable(),  // Dates can be null
     terminationDate: yup.date().nullable(),
   })
 
-  // Reactive form data model
+  // Reactive form data object with initial empty/default values
   const formData = reactive<Employee>({
     id: 0,
     code: '',
@@ -55,13 +57,13 @@ export function useEmployeeForm() {
     terminationDate: null
   })
 
-  // Initialize form with validation schema and initial values
+  // Initialize vee-validate form with schema and reactive data
   const { handleSubmit, errors, resetForm } = useForm<Employee>({
     validationSchema: schema,
     initialValues: formData,
   })
 
-  // Watch form data and reset the form whenever it changes
+  // Watch formData changes and reset vee-validate form accordingly
   watch(
     formData,
     (newVal) => {
@@ -70,7 +72,7 @@ export function useEmployeeForm() {
     { immediate: true, deep: true }
   )
 
-  // On mount, load employee data if editing an existing one
+  // On component mount: if editing (route param id exists), load employee data into form
   onMounted(() => {
     const idParam = route.params.id
     if (idParam) {
@@ -80,11 +82,19 @@ export function useEmployeeForm() {
       const employees: Employee[] = JSON.parse(employeesJson)
       const employeeToEdit = employees.find((e) => e.id === id)
       if (employeeToEdit) {
-        Object.assign(formData, employeeToEdit)
+        Object.assign(formData, employeeToEdit) // Populate form data
       }
     }
   })
 
+  /**
+   * Saves employee data by simulating API update,
+   * then updates localStorage employees list accordingly.
+   * Inserts new or updates existing employee.
+   *
+   * @param employee - Employee data to save
+   * @returns success status
+   */
   async function saveEmployee(employee: Employee): Promise<{ success: boolean }> {
     try {
       await simulateApiUpdate(employee)
@@ -93,9 +103,9 @@ export function useEmployeeForm() {
 
       const index = employees.findIndex((e) => e.id === employee.id)
       if (index >= 0) {
-        employees[index] = employee
+        employees[index] = employee // Update existing
       } else {
-        employees.unshift(employee)
+        employees.unshift(employee) // Add new employee at beginning
       }
 
       localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees))

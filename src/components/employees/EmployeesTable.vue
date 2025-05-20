@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// Imports and types
 import { ref, toRef } from 'vue'
 import type { Employee } from '@/types/Employee'
 import { useEmployeeTableLogic } from '@/composables/useEmployeeTableLogic'
@@ -8,9 +9,13 @@ import { exportEmployeesToCSV } from '@/utils/exportCsv'
 import { useTexts } from '@/i18n/useTexts'
 import { importEmployeesFromCSV } from '@/utils/importCSV'
 
+// Localization texts
 const { texts } = useTexts()
 
+// Props: employees list
 const props = defineProps<{ employees: Employee[] }>()
+
+// Emits: user actions to parent component
 const emit = defineEmits<{
   (e: 'edit-employee', employee: Employee): void
   (e: 'delete-employee', employee: Employee): void
@@ -19,12 +24,14 @@ const emit = defineEmits<{
   (e: 'import-employees-error', errors: string[]): void
 }>()
 
+// Reactive state for search, pagination, sorting
 const searchQuery = ref('')
 const rowsPerPage = ref(5)
 const currentPage = ref(1)
 const sortKey = ref<keyof Employee>(SORT_KEYS.FULL_NAME)
 const sortAsc = ref(true)
 
+// Composable handling filtering, sorting, pagination
 const {
   paginatedEmployees,
   totalPages,
@@ -39,22 +46,23 @@ const {
   sortAsc
 )
 
+// Emit events for viewing, editing, deleting employees
 function onView(employee: Employee) {
   emit('view-employee', employee)
 }
-
 function onEdit(employee: Employee) {
   emit('edit-employee', employee)
 }
-
 function onDelete(employee: Employee) {
   emit('delete-employee', employee)
 }
 
+// Export current sorted list to CSV
 function exportToCSV() {
   exportEmployeesToCSV(sortedEmployees.value)
 }
 
+// File input ref and handlers for CSV import
 const fileInput = ref<HTMLInputElement | null>(null)
 
 function triggerFileInput() {
@@ -66,25 +74,24 @@ async function onFileChange(event: Event) {
   const file = target.files?.[0]
   if (!file) return
 
+  // Import employees and handle errors or valid entries
   const { validEmployees, errors } = await importEmployeesFromCSV(file, props.employees)
 
   if (errors.length) {
     emit('import-employees-error', errors)
   }
-
   if (validEmployees.length) {
     emit('import-employees', validEmployees)
   }
 
+  // Reset file input value
   target.value = ''
 }
-
 </script>
 
-
 <template>
+  <!-- Controls: search, rows per page, export/import CSV -->
   <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-
     <div class="col-12">
       <div class="row">
         <div class="mb-3 col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
@@ -103,7 +110,6 @@ async function onFileChange(event: Event) {
               <option :value="25">25</option>
             </select>
           </div>
-
         </div>
         <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 text-start text-md-end">
           <button @click="exportToCSV" class="btn btn-outline-success">
@@ -120,6 +126,7 @@ async function onFileChange(event: Event) {
     </div>
   </div>
 
+  <!-- Employee Table -->
   <div class="table-responsive">
     <table class="table table-hover table-bordered align-middle text-center">
       <thead class="table-primary">
@@ -193,6 +200,7 @@ async function onFileChange(event: Event) {
     </table>
   </div>
 
+  <!-- Pagination -->
   <nav class="d-flex justify-content-center mt-3">
     <ul class="pagination">
       <li class="page-item" :class="{ disabled: currentPage === 1 }">
