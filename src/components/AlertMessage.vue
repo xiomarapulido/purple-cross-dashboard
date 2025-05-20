@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // Import reactive utilities from Vue
 import { computed, watch } from 'vue'
+import { STATUS } from '@/constants/status'
 
 // Define the props that the component accepts
 const props = defineProps<{
   modelValue: boolean               // Controls whether the alert is visible (v-model)
   message: string                   // The message displayed inside the alert
-  type?: 'success' | 'error'       // Alert type, defaults to 'success'
+  type?: STATUS.success | STATUS.error       // Alert type, defaults to 'success'
   duration?: number                 // Duration in milliseconds to auto-close the alert
 }>()
 
@@ -15,7 +16,7 @@ const emit = defineEmits(['update:modelValue'])
 
 // Computed property to determine the CSS class based on alert type
 const alertClass = computed(() =>
-  props.type === 'error' ? 'alert-danger' : 'alert-success'
+  props.type === STATUS.error ? 'alert-danger' : 'alert-success'
 )
 
 // Watch for changes in modelValue
@@ -55,7 +56,6 @@ function close() {
    - Position absolutely to float over other content
    - High z-index to ensure it's on top */
 .scrollAlert {
-  max-height: 50px;
   overflow: hidden;
   word-wrap: break-word;
   overflow-wrap: break-word;
