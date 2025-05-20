@@ -5,6 +5,7 @@ import * as yup from 'yup'
 import type { Employee } from '@/types/Employee'
 import { STORAGE_KEYS } from '@/constants/storageKeys'
 import { texts } from '@/i18n'
+import { simulateApiUpdate } from '@/utils/apiSimulator'
 
 export function useEmployeeForm() {
   const route = useRoute()
@@ -50,8 +51,8 @@ export function useEmployeeForm() {
     fullName: '',
     occupation: '',
     department: '',
-    dateOfEmployment: '',
-    terminationDate: ''
+    dateOfEmployment: null,
+    terminationDate: null
   })
 
   // Initialize form with validation schema and initial values
@@ -84,18 +85,29 @@ export function useEmployeeForm() {
     }
   })
 
-  // Save or update employee in localStorage
-  function saveEmployee(employee: Employee) {
-    const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
-    const employees: Employee[] = employeesJson ? JSON.parse(employeesJson) : []
+  async function saveEmployee(employee: Employee): Promise<{ success: boolean }> {
+    try {
+      await simulateApiUpdate(employee)
+      const employeesJson = localStorage.getItem(STORAGE_KEYS.employees)
+      const employees: Employee[] = employeesJson ? JSON.parse(employeesJson) : []
 
-    const index = employees.findIndex((e) => e.id === employee.id)
-    if (index >= 0) {
-      employees[index] = employee
-    } else {
-      employees.unshift(employee)
+      const index = employees.findIndex((e) => e.id === employee.id)
+      if (index >= 0) {
+        employees[index] = employee
+      } else {
+        employees.unshift(employee)
+      }
+
+      localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees))
+
+      return {
+        success: true
+      }
+    } catch (error) {
+      return {
+        success: false
+      }
     }
-    localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees))
   }
 
   return {

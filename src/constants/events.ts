@@ -1,3 +1,3 @@
 export const EVENTS = {
-  employeesUpdated: 'employees-updated',
+  employeesUpdated: 'employees-updated'
 }

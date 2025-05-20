@@ -1,20 +1,29 @@
 import { ref } from 'vue'
 import type { Employee } from '@/types/Employee'
-import rawEmployees from '@/data/employees.json'
 import { STORAGE_KEYS } from '@/constants/storageKeys'
+import { simulateApiFetch } from '@/utils/apiSimulator'
+import { texts } from '@/i18n'
 
 const employees = ref<Employee[]>([])
+const errorMessage = ref<string | null>(null)
 
-// Load employees from localStorage or fallback to default data
-function loadEmployees() {
+
+async function loadEmployees() {
   const stored = localStorage.getItem(STORAGE_KEYS.employees)
+
   if (stored) {
-    // Parse and set employees from stored JSON
     employees.value = JSON.parse(stored)
+    errorMessage.value = null
   } else {
-    // Initialize with default employees and persist to localStorage
-    employees.value = [...rawEmployees]
-    localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(employees.value))
+    try {
+      const data = await simulateApiFetch<Employee[]>('/data/employees.json')
+      employees.value = data
+      localStorage.setItem(STORAGE_KEYS.employees, JSON.stringify(data))
+      errorMessage.value = null
+    } catch (error) {
+      employees.value = []
+      errorMessage.value = texts.employeeForm.messages.error
+    }
   }
 }
 
@@ -36,5 +45,6 @@ export function useEmployees() {
     loadEmployees,
     deleteEmployee,
     saveEmployees,
+    errorMessage
   }
 }

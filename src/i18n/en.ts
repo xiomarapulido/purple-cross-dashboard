@@ -42,7 +42,12 @@ export const en = {
             create: 'Create Employee',
             save: 'Save',
             createTetx: 'Create'
-        }
+        },
+        messages: {
+            editSuccess: 'the employee has been successfully updated',
+            createSuccess: 'The employee has been created successfully',
+            error: 'An unexpected error occurred, please try again.'
+        },
     },
     employeeTable: {
         tableHeaders: {
