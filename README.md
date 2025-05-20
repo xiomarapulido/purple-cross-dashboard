@@ -86,7 +86,7 @@ npm run format
 
 ---
 
-## ðŸ“ Project Structure
+## Project Structure
 
 ```
 src/
